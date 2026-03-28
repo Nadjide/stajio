@@ -5,8 +5,7 @@ import {
   structureLog, 
   generateReport, 
   prepareDefense, 
-  generateCVPoints,
-  generateLogo
+  generateCVPoints
 } from './services/gemini';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -130,19 +129,7 @@ const Dashboard = ({ user, profile, onProfileUpdate, onLogout }: { user: User, p
     }
   };
 
-  const runAITool = async (tool: 'report' | 'defense' | 'cv' | 'logo') => {
-    if (tool === 'logo') {
-      const hasKey = await (window as any).aistudio?.hasSelectedApiKey();
-      if (!hasKey) {
-        try {
-          await (window as any).aistudio?.openSelectKey();
-        } catch (e) {
-          console.error("Failed to open key selector", e);
-          return;
-        }
-      }
-    }
-
+  const runAITool = async (tool: 'report' | 'defense' | 'cv') => {
     setLoadingAI(true);
     setAiResult(null);
     try {
@@ -150,18 +137,9 @@ const Dashboard = ({ user, profile, onProfileUpdate, onLogout }: { user: User, p
       if (tool === 'report') result = await generateReport(profile, logs);
       if (tool === 'defense') result = await prepareDefense(profile, logs);
       if (tool === 'cv') result = await generateCVPoints(logs);
-      if (tool === 'logo') result = await generateLogo(`A modern, clean, minimalist logo for an app called Stajio. It is an intelligent assistant for interns and apprentices. The logo should incorporate elements like a graduation cap, a notebook, and a subtle AI/tech motif. The color palette should be primarily emerald green and neutral grays. Flat vector style, white background, suitable for web and mobile use.`);
       setAiResult({ type: tool, content: result });
     } catch (error) {
       console.error("AI Tool Error:", error);
-      if (error instanceof Error && error.message.includes("Requested entity was not found")) {
-        // Reset key selection state and prompt again
-        try {
-          await (window as any).aistudio?.openSelectKey();
-        } catch (e) {
-          console.error("Failed to open key selector", e);
-        }
-      }
     } finally {
       setLoadingAI(false);
     }
@@ -496,7 +474,7 @@ const Dashboard = ({ user, profile, onProfileUpdate, onLogout }: { user: User, p
               className="max-w-4xl"
             >
               <h2 className="text-3xl font-bold text-stone-900 dark:text-white mb-8">Outils IA</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 <button 
                   onClick={() => runAITool('report')}
                   className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm hover:border-emerald-500 dark:hover:border-emerald-500 transition-all text-left group"
@@ -527,16 +505,6 @@ const Dashboard = ({ user, profile, onProfileUpdate, onLogout }: { user: User, p
                   <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-2">Expérience → CV</h3>
                   <p className="text-sm text-stone-500 dark:text-stone-400">Transforme tes missions en bullet points ATS.</p>
                 </button>
-                <button 
-                  onClick={() => runAITool('logo')}
-                  className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm hover:border-emerald-500 dark:hover:border-emerald-500 transition-all text-left group"
-                >
-                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-600 transition-colors">
-                    <Sparkles className="text-orange-600 dark:text-orange-400 w-6 h-6 group-hover:text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-2">Générateur de Logo</h3>
-                  <p className="text-sm text-stone-500 dark:text-stone-400">Crée un logo unique pour ton projet avec l'IA.</p>
-                </button>
               </div>
 
               {loadingAI && (
@@ -557,45 +525,27 @@ const Dashboard = ({ user, profile, onProfileUpdate, onLogout }: { user: User, p
                       {aiResult.type === 'report' && 'Ton Rapport de Stage'}
                       {aiResult.type === 'defense' && 'Ta Préparation de Soutenance'}
                       {aiResult.type === 'cv' && 'Tes Points CV'}
-                      {aiResult.type === 'logo' && 'Ton Logo Généré'}
                     </h3>
                     <div className="flex items-center gap-4">
-                      {aiResult.type !== 'logo' && (
-                        <button 
-                          onClick={copyToClipboard}
-                          className="flex items-center gap-2 text-stone-500 dark:text-stone-400 font-medium hover:text-stone-700 dark:hover:text-stone-300 text-sm"
-                        >
-                          <Copy className="w-4 h-4" />
-                          {copied ? 'Copié !' : 'Copier'}
-                        </button>
-                      )}
-                      {aiResult.type === 'logo' ? (
-                        <a 
-                          href={aiResult.content}
-                          download="stajio-logo.png"
-                          className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 dark:hover:text-emerald-300 text-sm"
-                        >
-                          <Download className="w-4 h-4" />
-                          Télécharger PNG
-                        </a>
-                      ) : (
-                        <button 
-                          onClick={exportPDF}
-                          className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 dark:hover:text-emerald-300 text-sm"
-                        >
-                          <Download className="w-4 h-4" />
-                          Exporter PDF
-                        </button>
-                      )}
+                      <button 
+                        onClick={copyToClipboard}
+                        className="flex items-center gap-2 text-stone-500 dark:text-stone-400 font-medium hover:text-stone-700 dark:hover:text-stone-300 text-sm"
+                      >
+                        <Copy className="w-4 h-4" />
+                        {copied ? 'Copié !' : 'Copier'}
+                      </button>
+                      <button 
+                        onClick={exportPDF}
+                        className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium hover:text-emerald-700 dark:hover:text-emerald-300 text-sm"
+                      >
+                        <Download className="w-4 h-4" />
+                        Exporter PDF
+                      </button>
                     </div>
                   </div>
                   
                   <div className="prose prose-stone dark:prose-invert max-w-none" id="ai-result-content">
-                    {aiResult.type === 'logo' ? (
-                      <div className="flex justify-center p-8 bg-stone-50 dark:bg-stone-800/50 rounded-2xl">
-                        <img src={aiResult.content} alt="Logo généré" className="max-w-xs rounded-xl shadow-md" />
-                      </div>
-                    ) : aiResult.type === 'defense' ? (
+                    {aiResult.type === 'defense' ? (
                       <div className="space-y-8">
                         <div>
                           <h4 className="text-lg font-bold mb-4">Plan de présentation</h4>

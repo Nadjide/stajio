@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 const faqs = [
   {
     q: "Comment mes données sont-elles utilisées ?",
-    a: "Tes données sont stockées de manière sécurisée sur Firebase. Elles ne sont utilisées que pour générer tes propres rapports et résumés via l'API Gemini. Personne d'autre n'y a accès.",
+    a: "Tes données sont stockées en local dans la base SQLite du projet. Les traitements IA passent par ton modèle local via Ollama (ex: llama3.2). Aucune clé API cloud n'est requise.",
   },
   {
     q: "Puis-je exporter mon journal de bord ?",
