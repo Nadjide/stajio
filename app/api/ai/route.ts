@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 import { chatWithOllama, safeJsonParse } from "@/src/server/ai/ollama";
+import {
+  structureLogPrompt,
+  generateReportPrompt,
+  prepareDefensePrompt,
+  generateCVPointsPrompt,
+  chatSystemPrompt,
+  evaluateAnswerPrompt,
+  sanitizeChatHistory,
+} from "@/src/server/ai/prompts";
+import { aiRequestSchema, parseBody } from "@/src/server/validation";
 
 export const runtime = "nodejs";
 
@@ -15,43 +25,77 @@ type PrepareDefenseResult = {
   questions: Array<{ question: string; answerHint: string }>;
 };
 
-export async function POST(request: Request) {
-  try {
-    const { task, payload } = await request.json();
+type EvaluateAnswerResult = {
+  score: number;
+  feedback: string;
+  improvedAnswer: string;
+};
 
+export async function POST(request: Request) {
+  const parsed = await parseBody(request, aiRequestSchema);
+  if (parsed.error) return parsed.error;
+  const { task, payload, model } = parsed.data;
+
+  try {
     if (task === "structureLog") {
       const text = await chatWithOllama({
         mode: "json",
-        userPrompt: `Structure cette entrée de journal d'alternance. Réponds uniquement en JSON valide avec ce schéma exact: {"summary":string,"missions":string[],"technologies":string[],"skills":string[]}. Entrée: ${payload?.rawContent || ""}`,
+        model,
+        userPrompt: structureLogPrompt(payload),
       });
       return NextResponse.json(safeJsonParse<StructureLogResult>(text));
     }
 
     if (task === "generateReport") {
-      const text = await chatWithOllama({
-        userPrompt: `Génère un rapport de stage structuré en français, format Markdown. Contexte étudiant: ${JSON.stringify(payload?.userData || {})}. Logs: ${JSON.stringify(payload?.logs || [])}. Inclure: Introduction, Présentation de l'entreprise, Missions réalisées, Bilan technique, Conclusion.`,
-      });
+      const text = await chatWithOllama({ model, userPrompt: generateReportPrompt(payload) });
       return NextResponse.json({ content: text });
     }
 
     if (task === "prepareDefense") {
       const text = await chatWithOllama({
         mode: "json",
-        userPrompt: `Prépare une soutenance en français. Réponds uniquement en JSON valide avec ce schéma exact: {"plan":string[],"questions":[{"question":string,"answerHint":string}]}. Contexte étudiant: ${JSON.stringify(payload?.userData || {})}. Expérience: ${JSON.stringify(payload?.logs || [])}.`,
+        model,
+        userPrompt: prepareDefensePrompt(payload),
       });
       return NextResponse.json(safeJsonParse<PrepareDefenseResult>(text));
     }
 
     if (task === "generateCVPoints") {
+      const text = await chatWithOllama({ model, userPrompt: generateCVPointsPrompt(payload) });
+      return NextResponse.json({ content: text });
+    }
+
+    if (task === "chat") {
       const text = await chatWithOllama({
-        userPrompt: `Transforme ces expériences d'alternance en bullet points optimisés ATS, en français. Utilise des verbes d'action et quantifie les résultats si possible. Données: ${JSON.stringify(payload?.logs || [])}`,
+        model,
+        systemPrompt: chatSystemPrompt(payload),
+        messages: sanitizeChatHistory(payload),
+        userPrompt: String(payload?.message || ""),
+        temperature: 0.5,
       });
       return NextResponse.json({ content: text });
+    }
+
+    if (task === "evaluateAnswer") {
+      const text = await chatWithOllama({
+        mode: "json",
+        model,
+        userPrompt: evaluateAnswerPrompt(payload),
+      });
+      return NextResponse.json(safeJsonParse<EvaluateAnswerResult>(text));
     }
 
     return NextResponse.json({ error: "Unsupported AI task" }, { status: 400 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "AI processing failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const isConnectionError = /fetch failed|ECONNREFUSED/i.test(message);
+    return NextResponse.json(
+      {
+        error: isConnectionError
+          ? "Impossible de contacter Ollama. Vérifie qu'il tourne (ollama serve)."
+          : message,
+      },
+      { status: isConnectionError ? 503 : 500 },
+    );
   }
 }

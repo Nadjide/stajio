@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { usersRepository } from "@/src/server/repositories/users";
 import { requireAuth } from "@/src/server/route-auth";
+import { parseBody, profileSchema } from "@/src/server/validation";
 
 export const runtime = "nodejs";
 
@@ -16,16 +17,10 @@ export async function POST(request: Request) {
   const auth = await requireAuth();
   if ("error" in auth) return auth.error;
 
-  const { school, degree, internshipStart, internshipEnd, company, tutorName, displayName } = await request.json();
-  usersRepository.updateProfile(auth.payload.uid, {
-    school,
-    degree,
-    internshipStart,
-    internshipEnd,
-    company,
-    tutorName,
-    displayName,
-  });
+  const parsed = await parseBody(request, profileSchema);
+  if (parsed.error) return parsed.error;
+
+  usersRepository.updateProfile(auth.payload.uid, parsed.data);
 
   return NextResponse.json({ success: true });
 }

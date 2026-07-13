@@ -23,14 +23,22 @@ Le projet est pensé pour un usage concret et démontrable en portfolio: archite
 - URL de déploiement: à ajouter
 
 ## Fonctionnalités
-- Journal de bord intelligent (structuration missions/technologies/compétences)
-- Gestion des deadlines école/entreprise
-- Génération de rapport de stage (Markdown)
+- Tableau de bord: progression du stage, stats, streak d'assiduité, matrice de compétences
+- Journal de bord intelligent (structuration missions/technologies/compétences), avec édition et re-structuration IA
+- Timeline du stage semaine par semaine (journal + deadlines)
+- Gestion des deadlines école/entreprise: badges d'urgence, édition, suppression
+- Génération de rapport de stage en streaming (Markdown, affichage en direct)
 - Préparation de soutenance (plan + questions probables)
+- Simulation de soutenance interactive: l'IA pose les questions, note tes réponses et te corrige
+- Assistant IA contextuel (chat en streaming, connaît ton journal et ton profil)
 - Optimisation CV (bullet points ATS)
-- Export PDF des résultats IA
+- Historique des générations IA (sauvegarde, relecture, suppression)
+- Export PDF natif (texte sélectionnable) des résultats IA
+- Export/Import complet des données en JSON (local-first)
+- Choix du modèle Ollama depuis les réglages
+- Validation Zod sur toutes les routes API
 - Auth JWT en cookie HTTP-only
-- UI responsive avec thème clair/sombre
+- UI responsive avec thème clair/sombre persisté
 
 ## Architecture
 - Frontend: Next.js 16 App Router + React 19
@@ -43,7 +51,10 @@ Le projet est pensé pour un usage concret et démontrable en portfolio: archite
 - Aucune clé API cloud nécessaire pour l'IA
 - Données utilisateur stockées localement (SQLite)
 - Séparation claire front/backend via API interne
-- Route IA unique côté backend: `/api/ai`
+- Routes IA côté backend: `/api/ai` (JSON), `/api/ai/stream` (streaming token par token), `/api/ai/models`
+- Historique IA persisté: `/api/ai-outputs`
+- Export/Import: `/api/export`, `/api/import`
+- Validation systématique des payloads avec Zod
 
 ## Installation locale
 1. Cloner le dépôt
@@ -86,12 +97,15 @@ Application disponible sur `http://localhost:3000`.
 - `npm run lint:code`: lint ESLint
 - `npm run format`: formatage Prettier
 - `npm run test`: tests API (Vitest)
+- `npm run test:e2e`: tests E2E (Playwright, nécessite `npx playwright install chromium`)
 - `npm run check`: pipeline locale complète (lint + tests + build)
 
 ## Qualité logicielle
 - ESLint (config Next + JS)
 - Prettier + plugin Tailwind
-- Vitest (tests API essentiels)
+- Vitest (tests API, repositories et validation)
+- Playwright (tests E2E du parcours principal)
+- CI GitHub Actions (lint + tests + build + E2E)
 
 ## Sécurité
 - JWT signé avec `JWT_SECRET`
@@ -99,11 +113,10 @@ Application disponible sur `http://localhost:3000`.
 - En production: HTTPS obligatoire et secret robuste
 
 ## Roadmap portfolio (prochaines améliorations)
-- Tests E2E (Playwright)
-- Validation schémas API (Zod)
 - Observabilité (logs structurés)
-- Ajout édition d'entrée de journal
-- CI GitHub Actions
+- Notifications navigateur pour les deadlines
+- Mapping de la matrice de compétences vers un référentiel (RNCP)
+- Captures d'écran et vidéo de démo
 
 ## Pourquoi ce projet est pertinent en portfolio
 - Cas d'usage réel (étudiants en alternance)

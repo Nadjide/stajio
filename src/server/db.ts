@@ -42,6 +42,16 @@ db.exec(`
     completed INTEGER,
     FOREIGN KEY(uid) REFERENCES users(uid)
   );
+
+  CREATE TABLE IF NOT EXISTS ai_outputs (
+    id TEXT PRIMARY KEY,
+    uid TEXT,
+    type TEXT,
+    title TEXT,
+    content TEXT,
+    createdAt TEXT,
+    FOREIGN KEY(uid) REFERENCES users(uid)
+  );
 `);
 
 export { db };
