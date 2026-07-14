@@ -9,6 +9,7 @@
     <a href="https://ollama.com/"><img src="https://img.shields.io/badge/Ollama-Local_Model-2f855a?style=flat-square" alt="Ollama" /></a>
     <a href="https://www.sqlite.org/"><img src="https://img.shields.io/badge/SQLite-Local_DB-0ea5e9?style=flat-square" alt="SQLite" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.8-blue?style=flat-square" alt="TypeScript" /></a>
+    <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" /></a>
   </p>
 </div>
 
@@ -69,6 +70,7 @@ L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama 
 - **Backend** : Route Handlers Next.js (`app/api/*`)
 - **Base de données** : SQLite (`better-sqlite3`)
 - **IA** : Ollama en local (modèle configurable, ex. `llama3.2`)
+- **Conteneurisation** : Docker (build multi-stage) + Docker Compose (app + Ollama + volumes persistants)
 
 ### Points techniques
 
@@ -80,37 +82,61 @@ L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama 
 - Export / import de toutes les données (`/api/export`, `/api/import`)
 - Validation systématique des entrées API avec Zod, avec messages d'erreur détaillés
 
-## Installation locale
+## Installation
 
-1. Cloner le dépôt
+Cloner le dépôt dans tous les cas :
 
 ```bash
 git clone https://github.com/Nadjide/stajio.git
 cd stajio
 ```
 
-2. Installer les dépendances
+### Avec Docker (recommandé)
+
+Le dépôt fournit un `Dockerfile` (build multi-stage : dépendances, compilation, image de production minimale sans outils de build, utilisateur non-root) et un `docker-compose.yml` qui orchestre l'application et Ollama ensemble, avec des volumes dédiés pour que les données et les modèles survivent aux redémarrages.
 
 ```bash
-npm install
+docker compose up -d --build
 ```
 
-3. Configurer l'environnement
+Au premier démarrage, récupérer un modèle dans le conteneur Ollama :
+
+```bash
+docker compose exec ollama ollama pull llama3.2
+```
+
+Application disponible sur `http://localhost:3001`. Ollama est accessible en interne par l'application via le réseau Docker (`http://ollama:11434`) et exposé sur l'hôte sur le port `11434` si besoin d'y accéder directement.
+
+Variables surchargeables via un fichier `.env` à la racine (`JWT_SECRET`, `OLLAMA_MODEL`) :
 
 ```bash
 cp .env.example .env
 ```
 
-Puis ajuster `.env` si besoin (modèle Ollama, secret JWT en production).
+Pour tout arrêter : `docker compose down` (les données restent dans les volumes nommés ; ajouter `-v` pour les supprimer aussi).
 
-4. Lancer Ollama et récupérer un modèle
+### Installation manuelle (sans Docker)
+
+1. Installer les dépendances
+
+```bash
+npm install
+```
+
+2. Configurer l'environnement
+
+```bash
+cp .env.example .env
+```
+
+3. Lancer Ollama et récupérer un modèle
 
 ```bash
 ollama serve
 ollama pull llama3.2
 ```
 
-5. Démarrer l'application
+4. Démarrer l'application
 
 ```bash
 npm run dev
@@ -159,6 +185,7 @@ Application disponible sur `http://localhost:3001`.
 - Intégration d'une IA locale plutôt qu'un simple appel à une API cloud : contrainte technique assumée et différenciante
 - Fonctionnalités IA avancées : streaming, historique, simulation interactive avec évaluation
 - Couverture de tests à plusieurs niveaux (unitaire, API, end-to-end) et CI configurée
+- Conteneurisation complète (image de production minimale, utilisateur non-root, healthchecks, volumes persistants) pour un déploiement reproductible
 
 ## Licence
 

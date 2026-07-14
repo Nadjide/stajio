@@ -1,7 +1,10 @@
+import fs from "fs";
 import path from "path";
 import Database from "better-sqlite3";
 
-const DB_PATH = path.join(process.cwd(), "stajio.db");
+const DB_PATH = process.env.STAJIO_DB_PATH || path.join(process.cwd(), "stajio.db");
+
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 const db = new Database(DB_PATH);
 
