@@ -252,6 +252,18 @@ export default function App() {
     checkAuth();
   }, []);
 
+  const handleLogin = async (loggedInUser: User) => {
+    setUser(loggedInUser);
+    try {
+      const profileData = await api.profile.get();
+      if (profileData && profileData.school) {
+        setProfile(profileData);
+      }
+    } catch (error) {
+      console.error("Profile Fetch Error:", error);
+    }
+  };
+
   const handleLogout = async () => {
     await api.auth.logout();
     setUser(null);
@@ -270,7 +282,7 @@ export default function App() {
     <ErrorBoundary>
       <ToastProvider>
         {!user ? (
-          <AuthPage onLogin={(u) => setUser(u)} />
+          <AuthPage onLogin={handleLogin} />
         ) : !profile ? (
           <ProfileSetupPage user={user} onComplete={async () => {
             const p = await api.profile.get();

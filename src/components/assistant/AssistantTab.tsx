@@ -211,8 +211,8 @@ export function AssistantTab({ profile, logs }: Props) {
           <div className="space-y-4 min-h-[200px]">
             {messages.length === 0 && !streaming && (
               <div className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm">
-                <p className="text-stone-600 dark:text-stone-300 mb-4">
-                  💡 Quelques idées pour commencer :
+                <p className="text-stone-600 dark:text-stone-300 mb-4 font-medium">
+                  Quelques idées pour commencer :
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map((suggestion) => (

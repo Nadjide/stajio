@@ -25,15 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
-      let errorMessage = "Une erreur est survenue.";
-      try {
-        const parsed = JSON.parse(this.state.error.message);
-        if (parsed.error) {
-          errorMessage = `Erreur Firestore: ${parsed.error} (${parsed.operationType} sur ${parsed.path})`;
-        }
-      } catch (e) {
-        errorMessage = this.state.error.message || errorMessage;
-      }
+      const errorMessage = this.state.error?.message || "Une erreur est survenue.";
 
       return (
         <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 p-4">

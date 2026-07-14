@@ -83,7 +83,7 @@ export function DashboardTab({ profile, logs, deadlines, onNavigate }: Props) {
     >
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-stone-900 dark:text-white">
-          Salut, {profile.displayName.split(" ")[0]} 👋
+          Salut, {profile.displayName.split(" ")[0]}
         </h2>
         <p className="text-stone-500 dark:text-stone-400">
           Voici où tu en es dans ton alternance chez {profile.company}.

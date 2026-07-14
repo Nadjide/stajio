@@ -8,3 +8,6 @@ coverage/
 !.env.example
 .next/
 stajio.db
+tsconfig.tsbuildinfo
+playwright-report/
+test-results/

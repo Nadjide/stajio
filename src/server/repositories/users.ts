@@ -28,7 +28,11 @@ export const usersRepository = {
   },
 
   findProfileByUid: (uid: string) => {
-    return db.prepare("SELECT * FROM users WHERE uid = ?").get(uid) as UserRow | undefined;
+    return db
+      .prepare(
+        "SELECT uid, email, displayName, school, degree, internshipStart, internshipEnd, company, tutorName FROM users WHERE uid = ?",
+      )
+      .get(uid) as Omit<UserRow, "password"> | undefined;
   },
 
   updateProfile: (

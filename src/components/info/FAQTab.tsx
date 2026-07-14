@@ -8,7 +8,7 @@ const faqs = [
   },
   {
     q: "Puis-je exporter mon journal de bord ?",
-    a: "Oui, tu peux générer un rapport complet depuis l'onglet 'Outils IA' et l'exporter au format PDF en un clic.",
+    a: "Oui, de deux façons: génère un rapport complet depuis l'onglet 'Outils IA' et exporte-le en PDF, ou exporte l'intégralité de tes données au format JSON depuis ton profil.",
   },
   {
     q: "L'IA peut-elle écrire tout mon rapport à ma place ?",
@@ -16,7 +16,11 @@ const faqs = [
   },
   {
     q: "Est-ce que je peux modifier une entrée du journal ?",
-    a: "Pour l'instant, tu peux supprimer une entrée et la recréer. La modification directe arrivera dans une prochaine mise à jour !",
+    a: "Oui. Clique sur l'icône de modification d'une entrée pour changer son contenu, avec la possibilité de la faire re-structurer par l'IA.",
+  },
+  {
+    q: "Que se passe-t-il si Ollama n'est pas lancé ?",
+    a: "L'application te prévient clairement que le modèle local est injoignable et te propose de réessayer une fois Ollama démarré. Tes données restent intactes.",
   },
 ];
 
