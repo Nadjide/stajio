@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stajio-config
+  labels:
+    app.kubernetes.io/part-of: stajio
+data:
+  OLLAMA_BASE_URL: http://ollama:11434
+  OLLAMA_MODEL: phi4-mini
+  STAJIO_DB_PATH: /app/data/stajio.db
+  NODE_ENV: production

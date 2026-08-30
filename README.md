@@ -69,7 +69,7 @@ L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama 
 - **Frontend** : Next.js 16 (App Router) + React 19, Tailwind CSS 4
 - **Backend** : Route Handlers Next.js (`app/api/*`)
 - **Base de données** : SQLite (`better-sqlite3`)
-- **IA** : Ollama en local (modèle configurable, ex. `llama3.2`)
+- **IA** : Ollama en local (modèle configurable, ex. `phi4-mini`)
 - **Conteneurisation** : Docker (build multi-stage) + Docker Compose (app + Ollama + volumes persistants)
 
 ### Points techniques
@@ -102,7 +102,7 @@ docker compose up -d --build
 Au premier démarrage, récupérer un modèle dans le conteneur Ollama :
 
 ```bash
-docker compose exec ollama ollama pull llama3.2
+docker compose exec ollama ollama pull phi4-mini
 ```
 
 Application disponible sur `http://localhost:3001`. Ollama est accessible en interne par l'application via le réseau Docker (`http://ollama:11434`) et exposé sur l'hôte sur le port `11434` si besoin d'y accéder directement.
@@ -133,7 +133,7 @@ cp .env.example .env
 
 ```bash
 ollama serve
-ollama pull llama3.2
+ollama pull phi4-mini
 ```
 
 4. Démarrer l'application

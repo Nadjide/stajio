@@ -11,3 +11,9 @@ stajio.db
 tsconfig.tsbuildinfo
 playwright-report/
 test-results/
+
+# Kubernetes : les manifests deploiables restent versionnes, mais jamais les
+# secrets locaux ou les fichiers de donnees crees pour une configuration perso.
+k8s/secret.yaml
+k8s/*.secret.yaml
+k8s/secrets/

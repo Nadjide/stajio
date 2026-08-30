@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stajio
+  labels:
+    app.kubernetes.io/name: stajio
+    app.kubernetes.io/part-of: stajio
+    app.kubernetes.io/component: web
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: stajio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: stajio
+        app.kubernetes.io/part-of: stajio
+        app.kubernetes.io/component: web
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: stajio
+          image: stajio:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: stajio-config
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: stajio-secrets
+                  key: JWT_SECRET
+          volumeMounts:
+            - name: stajio-data
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: stajio-data
+          persistentVolumeClaim:
+            claimName: stajio-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stajio
+  labels:
+    app.kubernetes.io/name: stajio
+    app.kubernetes.io/part-of: stajio
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: stajio
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http

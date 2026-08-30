@@ -1,0 +1,29 @@
+# Les deux volumes conservent les donnees apres la recreation des Pods.
+# Docker Desktop fournit normalement une StorageClass par defaut en local.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stajio-data
+  labels:
+    app.kubernetes.io/name: stajio
+    app.kubernetes.io/component: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-data
+  labels:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/component: ai
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
