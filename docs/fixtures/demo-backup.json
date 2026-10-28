@@ -1,0 +1,269 @@
+{
+  "format": "stajio",
+  "version": 3,
+  "exportedAt": "2027-02-16T09:00:00.000Z",
+  "profile": {
+    "displayName": "Camille Exemple",
+    "school": "École fictive du numérique",
+    "degree": "Master Développement logiciel",
+    "internshipStart": "2026-09-07",
+    "internshipEnd": "2027-02-26",
+    "company": "Réservio (entreprise fictive)",
+    "tutorName": "Alex Tutrice"
+  },
+  "logs": [
+    {
+      "id": "demo-note-01",
+      "date": "2026-09-07",
+      "rawContent": "Accueil dans l'équipe produit. Installation du poste, lecture de la documentation de l'application de réservation et présentation des rituels agiles.",
+      "structuredContent": "Accueil dans l'équipe produit.",
+      "skills": ["Prise en main d'un projet existant"],
+      "weekNumber": 1,
+      "summary": "Accueil dans l'équipe produit.",
+      "missions": ["Découvrir l'architecture de l'application"],
+      "technologies": ["Git", "Docker"]
+    },
+    {
+      "id": "demo-note-02",
+      "date": "2026-09-15",
+      "rawContent": "Première correction de bug sur le formulaire de réservation : la date de fin pouvait précéder la date de début. Ajout d'un test unitaire.",
+      "structuredContent": "Première correction de bug sur le formulaire de réservation : la date de fin pouvait précéder la date de début.",
+      "skills": ["Tests automatisés", "Débogage"],
+      "weekNumber": 2,
+      "summary": "Première correction de bug sur le formulaire de réservation : la date de fin pouvait précéder la date de début.",
+      "missions": ["Corriger la validation des dates"],
+      "technologies": ["TypeScript", "Vitest"]
+    },
+    {
+      "id": "demo-note-03",
+      "date": "2026-09-24",
+      "rawContent": "Revue de code avec ma tutrice. Elle m'a conseillé de découper mes commits et de mieux nommer mes fonctions.",
+      "structuredContent": "Revue de code avec ma tutrice.",
+      "skills": ["Travail en équipe"],
+      "weekNumber": 3,
+      "summary": "Revue de code avec ma tutrice.",
+      "missions": ["Intégrer les retours de revue"],
+      "technologies": ["Git"]
+    },
+    {
+      "id": "demo-note-04",
+      "date": "2026-10-02",
+      "rawContent": "Conception de l'écran d'historique des réservations avec la designer. Maquette validée après deux itérations.",
+      "structuredContent": "Conception de l'écran d'historique des réservations avec la designer.",
+      "skills": ["Communication avec les métiers"],
+      "weekNumber": 4,
+      "summary": "Conception de l'écran d'historique des réservations avec la designer.",
+      "missions": ["Concevoir l'écran d'historique"],
+      "technologies": ["Figma"]
+    },
+    {
+      "id": "demo-note-05",
+      "date": "2026-10-13",
+      "rawContent": "Développement de l'API de l'historique (pagination et filtres par statut). Documentation des paramètres.",
+      "structuredContent": "Développement de l'API de l'historique (pagination et filtres par statut).",
+      "skills": ["Développer une API REST"],
+      "weekNumber": 6,
+      "summary": "Développement de l'API de l'historique (pagination et filtres par statut).",
+      "missions": ["Développer l'API d'historique"],
+      "technologies": ["Node.js", "PostgreSQL"]
+    },
+    {
+      "id": "demo-note-06",
+      "date": "2026-10-22",
+      "rawContent": "Tests d'intégration de l'API d'historique. Découverte d'une requête lente ; ajout d'un index après analyse du plan d'exécution.",
+      "structuredContent": "Tests d'intégration de l'API d'historique.",
+      "skills": ["Optimisation de performances", "Tests automatisés"],
+      "weekNumber": 7,
+      "summary": "Tests d'intégration de l'API d'historique.",
+      "missions": ["Optimiser la requête d'historique"],
+      "technologies": ["PostgreSQL"]
+    },
+    {
+      "id": "demo-note-07",
+      "date": "2026-11-04",
+      "rawContent": "Présentation de l'écran d'historique en démonstration de fin de sprint. Retours positifs ; une demande d'export CSV a été notée.",
+      "structuredContent": "Présentation de l'écran d'historique en démonstration de fin de sprint.",
+      "skills": ["Communication avec les métiers"],
+      "weekNumber": 9,
+      "summary": "Présentation de l'écran d'historique en démonstration de fin de sprint.",
+      "missions": ["Présenter le travail en démonstration"],
+      "technologies": []
+    },
+    {
+      "id": "demo-note-08",
+      "date": "2026-11-17",
+      "rawContent": "Mise en place de l'export CSV. Gestion des accents et des séparateurs selon la langue.",
+      "structuredContent": "Mise en place de l'export CSV.",
+      "skills": ["Développer une API REST"],
+      "weekNumber": 11,
+      "summary": "Mise en place de l'export CSV.",
+      "missions": ["Développer l'export CSV"],
+      "technologies": ["Node.js"]
+    },
+    {
+      "id": "demo-note-09",
+      "date": "2026-11-27",
+      "rawContent": "Point mi-parcours avec ma tutrice et l'école. Objectif fixé : gagner en autonomie sur les déploiements.",
+      "structuredContent": "Point mi-parcours avec ma tutrice et l'école.",
+      "skills": ["Recul sur sa pratique"],
+      "weekNumber": 12,
+      "summary": "Point mi-parcours avec ma tutrice et l'école.",
+      "missions": ["Préparer le point mi-parcours"],
+      "technologies": []
+    },
+    {
+      "id": "demo-note-10",
+      "date": "2026-12-08",
+      "rawContent": "Découverte de la chaîne d'intégration continue. J'ai ajouté l'exécution des tests sur chaque demande de fusion.",
+      "structuredContent": "Découverte de la chaîne d'intégration continue.",
+      "skills": ["Intégration continue"],
+      "weekNumber": 14,
+      "summary": "Découverte de la chaîne d'intégration continue.",
+      "missions": ["Automatiser les tests en CI"],
+      "technologies": ["GitHub Actions"]
+    },
+    {
+      "id": "demo-note-11",
+      "date": "2026-12-16",
+      "rawContent": "Premier déploiement en préproduction réalisé seul, en suivant la procédure. Rédaction d'une page de dépannage.",
+      "structuredContent": null,
+      "skills": ["Déploiement", "Rédaction de documentation"],
+      "weekNumber": 15,
+      "summary": null,
+      "missions": [],
+      "technologies": []
+    },
+    {
+      "id": "demo-note-12",
+      "date": "2027-01-11",
+      "rawContent": "Reprise après les congés. Analyse des retours utilisateurs sur l'historique et priorisation avec le product owner.",
+      "structuredContent": null,
+      "skills": ["Communication avec les métiers"],
+      "weekNumber": 19,
+      "summary": null,
+      "missions": [],
+      "technologies": []
+    },
+    {
+      "id": "demo-note-13",
+      "date": "2027-01-20",
+      "rawContent": "Refonte de la gestion des erreurs de l'API : messages compréhensibles et codes cohérents.",
+      "structuredContent": null,
+      "skills": ["Développer une API REST"],
+      "weekNumber": 20,
+      "summary": null,
+      "missions": [],
+      "technologies": []
+    },
+    {
+      "id": "demo-note-14",
+      "date": "2027-02-02",
+      "rawContent": "Rédaction du plan de mon rapport et choix de la problématique avec ma tutrice.",
+      "structuredContent": null,
+      "skills": ["Recul sur sa pratique"],
+      "weekNumber": 22,
+      "summary": null,
+      "missions": [],
+      "technologies": []
+    },
+    {
+      "id": "demo-note-15",
+      "date": "2027-02-15",
+      "rawContent": "Passation : documentation du module d'historique pour l'équipe et démonstration à un nouveau stagiaire.",
+      "structuredContent": null,
+      "skills": ["Rédaction de documentation", "Travail en équipe"],
+      "weekNumber": 24,
+      "summary": null,
+      "missions": [],
+      "technologies": []
+    }
+  ],
+  "deadlines": [
+    {
+      "id": "demo-deadline-midpoint",
+      "title": "Point mi-parcours avec la tutrice",
+      "date": "2026-11-27",
+      "type": "company",
+      "completed": true
+    },
+    {
+      "id": "demo-deadline-report",
+      "title": "Remise du rapport de stage",
+      "date": "2027-02-12",
+      "type": "school",
+      "completed": false
+    },
+    {
+      "id": "demo-deadline-defense",
+      "title": "Soutenance",
+      "date": "2027-03-05",
+      "type": "school",
+      "completed": false
+    }
+  ],
+  "aiOutputs": [],
+  "drafts": [],
+  "reports": [],
+  "reportVersions": [],
+  "skills": [
+    {
+      "id": "demo-skill-api",
+      "label": "Développer une API REST",
+      "goal": "Concevoir seul un nouvel endpoint documenté",
+      "level": "practicing",
+      "createdAt": "2026-11-27T17:30:00.000Z",
+      "updatedAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "id": "demo-skill-tests",
+      "label": "Tests automatisés",
+      "goal": "Couvrir chaque correction par un test",
+      "level": "autonomous",
+      "createdAt": "2026-11-27T17:30:00.000Z",
+      "updatedAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "id": "demo-skill-deploy",
+      "label": "Déploiement",
+      "goal": "Déployer en production en autonomie",
+      "level": "to_work",
+      "createdAt": "2026-11-27T17:30:00.000Z",
+      "updatedAt": "2026-12-16T17:30:00.000Z"
+    }
+  ],
+  "skillEvidence": [
+    {
+      "skillId": "demo-skill-api",
+      "logId": "demo-note-05",
+      "createdAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "skillId": "demo-skill-api",
+      "logId": "demo-note-08",
+      "createdAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "skillId": "demo-skill-api",
+      "logId": "demo-note-13",
+      "createdAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "skillId": "demo-skill-tests",
+      "logId": "demo-note-02",
+      "createdAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "skillId": "demo-skill-tests",
+      "logId": "demo-note-06",
+      "createdAt": "2026-12-16T17:30:00.000Z"
+    },
+    {
+      "skillId": "demo-skill-deploy",
+      "logId": "demo-note-11",
+      "createdAt": "2026-12-16T17:30:00.000Z"
+    }
+  ],
+  "conversations": [],
+  "conversationMessages": [],
+  "simulations": []
+}

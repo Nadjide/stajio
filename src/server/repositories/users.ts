@@ -11,6 +11,7 @@ type UserRow = {
   company: string;
   tutorName: string;
   password: string;
+  authVersion: number;
 };
 
 export const usersRepository = {
@@ -24,7 +25,9 @@ export const usersRepository = {
   },
 
   findPublicByUid: (uid: string) => {
-    return db.prepare("SELECT uid, email, displayName FROM users WHERE uid = ?").get(uid) as Pick<UserRow, "uid" | "email" | "displayName"> | undefined;
+    return db.prepare("SELECT uid, email, displayName FROM users WHERE uid = ?").get(uid) as
+      | Pick<UserRow, "uid" | "email" | "displayName">
+      | undefined;
   },
 
   findProfileByUid: (uid: string) => {
@@ -32,7 +35,7 @@ export const usersRepository = {
       .prepare(
         "SELECT uid, email, displayName, school, degree, internshipStart, internshipEnd, company, tutorName FROM users WHERE uid = ?",
       )
-      .get(uid) as Omit<UserRow, "password"> | undefined;
+      .get(uid) as Omit<UserRow, "password" | "authVersion"> | undefined;
   },
 
   updateProfile: (

@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { aiOutputsRepository } from "@/src/server/repositories/ai-outputs";
-import { deadlinesRepository } from "@/src/server/repositories/deadlines";
-import { logsRepository } from "@/src/server/repositories/logs";
-import { usersRepository } from "@/src/server/repositories/users";
 import { requireAuth } from "@/src/server/route-auth";
+import { exportAccount } from "@/src/server/backup/service";
+import { BackupError } from "@/src/server/backup/schemas";
 
 export const runtime = "nodejs";
 
@@ -11,20 +9,20 @@ export async function GET() {
   const auth = await requireAuth();
   if ("error" in auth) return auth.error;
 
-  const uid = auth.payload.uid;
-  const data = {
-    exportedAt: new Date().toISOString(),
-    version: 1,
-    profile: usersRepository.findProfileByUid(uid) || null,
-    logs: logsRepository.listByUid(uid),
-    deadlines: deadlinesRepository.listByUid(uid),
-    aiOutputs: aiOutputsRepository.listByUid(uid),
-  };
-
-  return new NextResponse(JSON.stringify(data, null, 2), {
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="stajio-export-${new Date().toISOString().slice(0, 10)}.json"`,
-    },
-  });
+  try {
+    const backup = exportAccount(auth.payload.uid);
+    return new NextResponse(JSON.stringify(backup), {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Disposition": `attachment; filename="stajio-export-${new Date().toISOString().slice(0, 10)}.json"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    if (error instanceof BackupError) return NextResponse.json({ error: error.message }, { status: error.status });
+    return NextResponse.json(
+      { error: "Impossible de créer la sauvegarde. Tes données n'ont pas été modifiées." },
+      { status: 500 },
+    );
+  }
 }

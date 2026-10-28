@@ -4,11 +4,15 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-phi4-mini}
-      JWT_SECRET: ${JWT_SECRET:-change_me}
+      OLLAMA_NUM_CTX: ${OLLAMA_NUM_CTX:-8192}
+      OLLAMA_TIMEOUT_MS: ${OLLAMA_TIMEOUT_MS:-300000}
+      STAJIO_DB_PATH: ${STAJIO_DB_PATH:-/app/data/stajio.db}
+      JWT_SECRET: ${JWT_SECRET:?Definir un JWT_SECRET aleatoire de 32 octets minimum dans .env}
+      STAJIO_COOKIE_SECURE: ${STAJIO_COOKIE_SECURE:-false}
     volumes:
       - stajio-data:/app/data
     depends_on:
@@ -18,7 +22,7 @@ services:
   ollama:
     image: ollama/ollama:latest
     ports:
-      - "11434:11434"
+      - "127.0.0.1:11434:11434"
     volumes:
       - ollama-data:/root/.ollama
     restart: unless-stopped

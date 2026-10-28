@@ -7,5 +7,9 @@ metadata:
 data:
   OLLAMA_BASE_URL: http://ollama:11434
   OLLAMA_MODEL: phi4-mini
+  OLLAMA_NUM_CTX: "8192"
+  OLLAMA_TIMEOUT_MS: "300000"
   STAJIO_DB_PATH: /app/data/stajio.db
   NODE_ENV: production
+  # Local kubectl port-forward uses HTTP. Set true behind an HTTPS ingress.
+  STAJIO_COOKIE_SECURE: "false"

@@ -57,7 +57,8 @@ spec:
             periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /
+              # Fails when the database is unavailable; Ollama being down only degrades AI features.
+              path: /api/health
               port: http
             periodSeconds: 10
           livenessProbe:

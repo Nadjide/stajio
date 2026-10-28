@@ -1,103 +1,62 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
-import { format, differenceInWeeks, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Loader2, Pencil, Plus, Send, Sparkles, Trash2 } from "lucide-react";
-import { api } from "../../services/api";
-import { structureLog } from "../../services/ai";
+import { Loader2, Plus, RefreshCw, Search } from "lucide-react";
 import { useToast } from "../ui/Toast";
-import type { LogEntry, UserProfile } from "../../types/models";
+import type { LogEntry, Skill, UserProfile } from "../../types/models";
+import { inputClass } from "./noteFields";
+import { NoteCard } from "./NoteCard";
+import { NoteComposer } from "./NoteComposer";
+
+export type DataStatus = "loading" | "ready" | "error";
 
 type Props = {
   profile: UserProfile;
   logs: LogEntry[];
-  onRefresh: () => void;
+  skills: Skill[];
+  status: DataStatus;
+  onRefresh: () => Promise<void>;
+  onSkillsChanged: () => Promise<void>;
 };
 
-export function JournalTab({ profile, logs, onRefresh }: Props) {
+const normalize = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+
+function matches(log: LogEntry, query: string) {
+  if (!query) return true;
+  const haystack = normalize(
+    [log.rawContent, log.summary, ...(log.missions ?? []), ...(log.technologies ?? []), ...(log.skills ?? [])].join(
+      " ",
+    ),
+  );
+  return normalize(query)
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((word) => haystack.includes(word));
+}
+
+export function JournalTab({ profile, logs, skills, status, onRefresh, onSkillsChanged }: Props) {
   const { toast } = useToast();
-  const [isLogging, setIsLogging] = useState(false);
-  const [newLog, setNewLog] = useState("");
-  const [loadingAI, setLoadingAI] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState("");
-  const [savingEdit, setSavingEdit] = useState(false);
+  const [composing, setComposing] = useState(false);
+  const [structureId, setStructureId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
 
-  const handleAddLog = async () => {
-    if (!newLog.trim()) return;
-    setLoadingAI(true);
-    try {
-      const structured = await structureLog(newLog);
-      const weekNumber = differenceInWeeks(new Date(), parseISO(profile.internshipStart)) + 1;
+  const visible = useMemo(
+    () => logs.filter((log) => matches(log, query) && (!from || log.date >= from) && (!to || log.date <= to)),
+    [logs, query, from, to],
+  );
+  const filtered = !!(query || from || to);
 
-      await api.logs.add({
-        date: format(new Date(), "yyyy-MM-dd"),
-        rawContent: newLog,
-        structuredContent: structured.summary,
-        summary: structured.summary,
-        missions: structured.missions,
-        technologies: structured.technologies,
-        skills: structured.skills,
-        weekNumber,
-      });
-
-      setNewLog("");
-      setIsLogging(false);
-      onRefresh();
-      toast("Entrée ajoutée et structurée par l'IA.", "success");
-    } catch (error) {
-      toast(error instanceof Error ? error.message : "Erreur lors de l'ajout de l'entrée.", "error");
-    } finally {
-      setLoadingAI(false);
-    }
-  };
-
-  const startEdit = (log: LogEntry) => {
-    setEditingId(log.id);
-    setEditContent(log.rawContent || log.summary || "");
-  };
-
-  const saveEdit = async (log: LogEntry, restructure: boolean) => {
-    if (!editContent.trim()) return;
-    setSavingEdit(true);
-    try {
-      if (restructure) {
-        const structured = await structureLog(editContent);
-        await api.logs.update(log.id, {
-          rawContent: editContent,
-          structuredContent: structured.summary,
-          summary: structured.summary,
-          missions: structured.missions,
-          technologies: structured.technologies,
-          skills: structured.skills,
-        });
-        toast("Entrée mise à jour et re-structurée par l'IA.", "success");
-      } else {
-        await api.logs.update(log.id, {
-          rawContent: editContent,
-          summary: editContent,
-          structuredContent: editContent,
-        });
-        toast("Entrée mise à jour.", "success");
-      }
-      setEditingId(null);
-      onRefresh();
-    } catch (error) {
-      toast(error instanceof Error ? error.message : "Erreur lors de la mise à jour.", "error");
-    } finally {
-      setSavingEdit(false);
-    }
-  };
-
-  const deleteLog = async (id: string) => {
-    if (!window.confirm("Supprimer cette entrée de journal ?")) return;
-    try {
-      await api.logs.delete(id);
-      onRefresh();
-      toast("Entrée supprimée.", "success");
-    } catch (error) {
-      toast(error instanceof Error ? error.message : "Erreur lors de la suppression.", "error");
-    }
+  const saved = async (id: string) => {
+    setComposing(false);
+    await onRefresh();
+    toast("Note enregistrée.", "success");
+    // Offer structuring for this note, without starting the AI automatically.
+    setStructureId(id);
   };
 
   return (
@@ -107,152 +66,164 @@ export function JournalTab({ profile, logs, onRefresh }: Props) {
       exit={{ opacity: 0, x: -20 }}
       className="max-w-4xl"
     >
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-stone-900 dark:text-white">Journal de bord</h2>
-          <p className="text-stone-500 dark:text-stone-400">Documente tes progrès chaque semaine.</p>
+          <p className="text-stone-500 dark:text-stone-400">
+            Note tes activités : elles servent de preuves pour tes compétences et ton rapport.
+          </p>
         </div>
-        <button
-          onClick={() => setIsLogging(true)}
-          className="bg-emerald-600 dark:bg-emerald-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-all flex items-center gap-2"
-        >
-          <Plus className="w-5 h-5" />
-          Nouvelle entrée
-        </button>
+        {!composing && (
+          <button
+            type="button"
+            onClick={() => setComposing(true)}
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white transition-all hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+          >
+            <Plus className="h-5 w-5" aria-hidden />
+            Nouvelle note
+          </button>
+        )}
       </div>
 
-      {isLogging && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm mb-8"
-        >
-          <textarea
-            className="w-full h-32 p-4 rounded-xl border border-stone-100 dark:border-stone-800 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none resize-none mb-4"
-            placeholder="Qu'as-tu fait cette semaine ? (Missions, technos, problèmes...)"
-            value={newLog}
-            onChange={(e) => setNewLog(e.target.value)}
-          />
-          <div className="flex justify-end gap-3">
-            <button
-              onClick={() => setIsLogging(false)}
-              className="px-6 py-2 rounded-xl text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800"
-            >
-              Annuler
-            </button>
-            <button
-              onClick={handleAddLog}
-              disabled={loadingAI || !newLog.trim()}
-              className="bg-stone-900 dark:bg-emerald-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-stone-800 dark:hover:bg-emerald-700 transition-all flex items-center gap-2 disabled:opacity-50"
-            >
-              {loadingAI ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-              Enregistrer avec l'IA
-            </button>
-          </div>
-        </motion.div>
+      {composing && <NoteComposer profile={profile} onSaved={saved} onCancel={() => setComposing(false)} />}
+
+      {structureId && logs.some((log) => log.id === structureId) && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
+          <span className="flex-1">
+            Ta note est enregistrée. Veux-tu que l'IA propose un résumé, des missions et des compétences ?
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById(`note-${structureId}`)?.scrollIntoView({ behavior: "smooth" });
+              setStructureId(`structure:${structureId}`);
+            }}
+            className="rounded-lg bg-emerald-600 px-3 py-1.5 font-medium text-white"
+          >
+            Structurer avec l'IA
+          </button>
+          <button type="button" onClick={() => setStructureId(null)} className="rounded-lg px-3 py-1.5 font-medium">
+            Plus tard
+          </button>
+        </div>
       )}
 
-      <div className="space-y-6">
-        {logs.length === 0 && !isLogging && (
-          <div className="bg-white dark:bg-stone-900 p-12 rounded-3xl border border-dashed border-stone-300 dark:border-stone-700 text-center">
-            <p className="text-stone-500 dark:text-stone-400">
-              Aucune entrée pour l'instant. Raconte ta première semaine, l'IA s'occupe de la structurer !
-            </p>
-          </div>
-        )}
+      <section
+        aria-label="Rechercher dans le journal"
+        className="mb-6 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 md:grid-cols-[1fr_auto_auto_auto] dark:border-stone-800 dark:bg-stone-900"
+      >
+        <div className="relative">
+          <label htmlFor="journal-search" className="sr-only">
+            Rechercher un mot dans les notes
+          </label>
+          <Search className="pointer-events-none absolute top-3.5 left-3 h-4 w-4 text-stone-400" aria-hidden />
+          <input
+            id="journal-search"
+            type="search"
+            className={`${inputClass} pl-9`}
+            placeholder="Rechercher (mot, outil, mission…)"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="journal-from" className="text-xs text-stone-500 dark:text-stone-400">
+            Du
+          </label>
+          <input
+            id="journal-from"
+            type="date"
+            className={inputClass}
+            value={from}
+            onChange={(event) => setFrom(event.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="journal-to" className="text-xs text-stone-500 dark:text-stone-400">
+            Au
+          </label>
+          <input
+            id="journal-to"
+            type="date"
+            className={inputClass}
+            value={to}
+            onChange={(event) => setTo(event.target.value)}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setQuery("");
+            setFrom("");
+            setTo("");
+          }}
+          disabled={!filtered}
+          className="rounded-xl px-3 py-2 text-sm text-stone-500 hover:bg-stone-50 disabled:opacity-40 dark:text-stone-400 dark:hover:bg-stone-800"
+        >
+          Réinitialiser
+        </button>
+      </section>
 
-        {logs.map((log) => (
-          <div
-            key={log.id}
-            className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm relative group"
+      {status === "loading" && (
+        <div className="flex items-center justify-center gap-3 py-16 text-stone-500 dark:text-stone-400" role="status">
+          <Loader2 className="h-6 w-6 animate-spin" aria-hidden /> Chargement du journal…
+        </div>
+      )}
+
+      {status === "error" && (
+        <div
+          role="alert"
+          className="flex flex-wrap items-center gap-4 rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"
+        >
+          <p className="flex-1">
+            Impossible de récupérer ton journal. Tes notes ne sont pas perdues ; vérifie que Stajio tourne puis
+            réessaie.
+          </p>
+          <button
+            type="button"
+            onClick={() => void onRefresh()}
+            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                  Semaine {log.weekNumber}
-                </span>
-                <h3 className="text-xl font-bold text-stone-900 dark:text-white mt-1">
-                  {format(parseISO(log.date), "dd MMMM yyyy", { locale: fr })}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => startEdit(log)}
-                  className="text-stone-300 dark:text-stone-600 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
-                  title="Modifier"
-                >
-                  <Pencil className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => deleteLog(log.id)}
-                  className="text-stone-300 dark:text-stone-600 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                  title="Supprimer"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
+            <RefreshCw className="h-4 w-4" aria-hidden /> Réessayer
+          </button>
+        </div>
+      )}
+
+      {status === "ready" && (
+        <div className="space-y-6">
+          {filtered && (
+            <p className="text-sm text-stone-500 dark:text-stone-400" aria-live="polite">
+              {visible.length} note{visible.length > 1 ? "s" : ""} sur {logs.length}
+            </p>
+          )}
+          {logs.length === 0 && !composing && (
+            <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-12 text-center dark:border-stone-700 dark:bg-stone-900">
+              <p className="text-stone-500 dark:text-stone-400">
+                Aucune note pour l'instant. Raconte ta première journée ou ta première semaine : l'IA n'est pas
+                nécessaire pour commencer.
+              </p>
             </div>
-
-            {editingId === log.id ? (
-              <div>
-                <textarea
-                  className="w-full h-32 p-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none resize-none mb-4"
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                />
-                <div className="flex flex-wrap justify-end gap-3">
-                  <button
-                    onClick={() => setEditingId(null)}
-                    className="px-4 py-2 rounded-xl text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    onClick={() => saveEdit(log, false)}
-                    disabled={savingEdit || !editContent.trim()}
-                    className="px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 font-medium hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50"
-                  >
-                    Enregistrer tel quel
-                  </button>
-                  <button
-                    onClick={() => saveEdit(log, true)}
-                    disabled={savingEdit || !editContent.trim()}
-                    className="bg-emerald-600 dark:bg-emerald-500 text-white px-4 py-2 rounded-xl font-medium hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-all flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {savingEdit ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                    Re-structurer avec l'IA
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className="text-stone-600 dark:text-stone-300 mb-6 leading-relaxed">
-                  {log.summary || log.structuredContent}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {log.technologies?.map((tech, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg text-xs font-medium"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                  {log.skills?.map((skill, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-medium"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        ))}
-      </div>
+          )}
+          {logs.length > 0 && visible.length === 0 && (
+            <p className="rounded-2xl bg-white p-6 text-center text-stone-500 dark:bg-stone-900 dark:text-stone-400">
+              Aucune note ne correspond à ta recherche.
+            </p>
+          )}
+          {visible.map((log) => (
+            <div key={log.id} id={`note-${log.id}`}>
+              <NoteCard
+                key={structureId === `structure:${log.id}` ? `${log.id}-structure` : log.id}
+                log={log}
+                profile={profile}
+                skills={skills}
+                autoStructure={structureId === `structure:${log.id}`}
+                onChanged={onRefresh}
+                onSkillsChanged={onSkillsChanged}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }
