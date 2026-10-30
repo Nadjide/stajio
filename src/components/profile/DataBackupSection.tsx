@@ -178,11 +178,11 @@ export function DataBackupSection({ onRestored }: { onRestored: () => Promise<vo
                   <th scope="col" className="py-2">
                     Contenu
                   </th>
-                  <th scope="col" className="px-2 py-2">
+                  <th scope="col" className="px-1 py-2 sm:px-2">
                     <span className="sm:hidden">Actuel</span>
                     <span className="hidden sm:inline">Actuellement</span>
                   </th>
-                  <th scope="col" className="px-2 py-2">
+                  <th scope="col" className="px-1 py-2 sm:px-2">
                     <span className="sm:hidden">Après</span>
                     <span className="hidden sm:inline">Après restauration</span>
                   </th>
@@ -199,17 +199,17 @@ export function DataBackupSection({ onRestored }: { onRestored: () => Promise<vo
                     ["reportVersions", "Versions de rapport"],
                     ["conversations", "Conversations"],
                     ["conversationMessages", "Messages"],
-                    ["simulations", "Simulations de soutenance"],
-                    ["aiOutputs", "Résultats IA (CV, soutenance)"],
+                    ["simulations", "Simulations"],
+                    ["aiOutputs", "Résultats IA"],
                     ["drafts", "Brouillons"],
                   ] as const
                 ).map(([key, label]) => (
                   <tr key={key} className="border-t border-amber-200 dark:border-amber-800">
-                    <th scope="row" className="py-2 font-normal">
+                    <th scope="row" className="py-2 pr-1 font-normal [overflow-wrap:anywhere]">
                       {label}
                     </th>
-                    <td className="px-2 py-2">{pending.preview.current[key]}</td>
-                    <td className="px-2 py-2">{pending.preview.incoming[key]}</td>
+                    <td className="px-1 py-2 sm:px-2">{pending.preview.current[key]}</td>
+                    <td className="px-1 py-2 sm:px-2">{pending.preview.incoming[key]}</td>
                   </tr>
                 ))}
               </tbody>
