@@ -1,60 +1,19 @@
-import fs from "fs";
-import path from "path";
-import Database from "better-sqlite3";
+import path from "node:path";
+import type { Database } from "better-sqlite3";
+import { openDatabase } from "./database.mjs";
 
 const DB_PATH = process.env.STAJIO_DB_PATH || path.join(process.cwd(), "stajio.db");
 
-fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+let connection: Database | null = null;
 
-const db = new Database(DB_PATH);
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    uid TEXT PRIMARY KEY,
-    email TEXT UNIQUE,
-    displayName TEXT,
-    school TEXT,
-    degree TEXT,
-    internshipStart TEXT,
-    internshipEnd TEXT,
-    company TEXT,
-    tutorName TEXT,
-    password TEXT
-  );
-
-  CREATE TABLE IF NOT EXISTS logs (
-    id TEXT PRIMARY KEY,
-    uid TEXT,
-    date TEXT,
-    rawContent TEXT,
-    structuredContent TEXT,
-    skills TEXT,
-    weekNumber INTEGER,
-    summary TEXT,
-    missions TEXT,
-    technologies TEXT,
-    FOREIGN KEY(uid) REFERENCES users(uid)
-  );
-
-  CREATE TABLE IF NOT EXISTS deadlines (
-    id TEXT PRIMARY KEY,
-    uid TEXT,
-    title TEXT,
-    date TEXT,
-    type TEXT,
-    completed INTEGER,
-    FOREIGN KEY(uid) REFERENCES users(uid)
-  );
-
-  CREATE TABLE IF NOT EXISTS ai_outputs (
-    id TEXT PRIMARY KEY,
-    uid TEXT,
-    type TEXT,
-    title TEXT,
-    content TEXT,
-    createdAt TEXT,
-    FOREIGN KEY(uid) REFERENCES users(uid)
-  );
-`);
-
-export { db };
+/**
+ * Opened on first use, not on import: `next build` imports every route module
+ * and must never open (and migrate) the user's database.
+ */
+export const db = new Proxy({} as Database, {
+  get(_target, property) {
+    connection ??= openDatabase(DB_PATH).connection;
+    const value = Reflect.get(connection, property, connection);
+    return typeof value === "function" ? value.bind(connection) : value;
+  },
+});

@@ -18,6 +18,9 @@ tsconfig.tsbuildinfo
 playwright-report
 test-results
 tests
+backups
+recovery
+.stajio-e2e-*
 *.log
 .DS_Store
 Dockerfile

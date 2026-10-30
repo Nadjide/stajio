@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { POST as aiPost } from "../../app/api/ai/route";
 import { POST as aiStreamPost } from "../../app/api/ai/stream/route";
+
+// These cases exercise validation after authentication. Real cookie/session
+// access and successful model calls are covered by ai-auth.test.ts.
+vi.mock("../../src/server/route-auth", () => ({
+  requireAuth: async () => ({ payload: { uid: "validated-user", email: "validated@stajio.dev", authVersion: 0 } }),
+}));
 
 describe("API AI", () => {
   it("should return 400 for unsupported task", async () => {

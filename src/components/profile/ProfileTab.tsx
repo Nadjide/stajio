@@ -1,130 +1,129 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Cpu, Download, Upload } from "lucide-react";
+import { CheckCircle2, Cpu, RefreshCw, XCircle } from "lucide-react";
 import { api } from "../../services/api";
 import { getPreferredModel, setPreferredModel } from "../../services/ai";
 import { useToast } from "../ui/Toast";
-import type { User, UserProfile } from "../../types/models";
+import type { AiStatus, User, UserProfile } from "../../types/models";
+import { DataBackupSection } from "./DataBackupSection";
+import { AccountSecuritySection } from "./AccountSecuritySection";
 
-function SettingsSection({ onDataImported }: { onDataImported: () => void }) {
+function SettingsSection({ onDataImported }: { onDataImported: () => Promise<void> }) {
   const { toast } = useToast();
-  const [models, setModels] = useState<string[]>([]);
-  const [defaultModel, setDefaultModel] = useState("");
+  const [status, setStatus] = useState<AiStatus | null>(null);
+  const [checking, setChecking] = useState(true);
   const [selectedModel, setSelectedModel] = useState(getPreferredModel() || "");
-  const [modelsError, setModelsError] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const check = useCallback(async () => {
+    setChecking(true);
+    try {
+      setStatus(await api.ai.status());
+    } catch {
+      setStatus(null);
+    } finally {
+      setChecking(false);
+    }
+  }, []);
 
   useEffect(() => {
-    api.models
-      .list()
-      .then((data) => {
-        setModels(data.models);
-        setDefaultModel(data.default);
-      })
-      .catch(() => setModelsError(true));
-  }, []);
+    void check();
+  }, [check]);
 
   const handleModelChange = (value: string) => {
     setSelectedModel(value);
     setPreferredModel(value || null);
-    toast(value ? `Modèle IA: ${value}` : "Modèle IA par défaut restauré.", "success");
+    toast(value ? `Modèle IA : ${value}` : "Modèle IA par défaut restauré.", "success");
   };
 
-  const handleImport = async (file: File) => {
-    setImporting(true);
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      const result = await api.data.import(data);
-      const { logs = 0, deadlines = 0, aiOutputs = 0 } = result?.imported || {};
-      toast(`Import réussi: ${logs} entrées, ${deadlines} deadlines, ${aiOutputs} générations IA.`, "success");
-      onDataImported();
-    } catch (error) {
-      toast(error instanceof Error ? error.message : "Fichier d'import invalide.", "error");
-    } finally {
-      setImporting(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
+  const effectiveModel = selectedModel || status?.defaultModel || "";
+  const installed = (model: string) =>
+    !!status?.models.some((name) => name === model || name === `${model}:latest` || name.split(":")[0] === model);
+  const modelReady = !!status?.reachable && installed(effectiveModel);
+  const options = status ? [...new Set([...status.models, ...(selectedModel ? [selectedModel] : [])])] : [];
 
   return (
-    <div className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm mt-6 space-y-8">
-      <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-            <Cpu className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+    <div className="mt-6 space-y-8 rounded-3xl border border-stone-200 bg-white p-8 shadow-sm dark:border-stone-800 dark:bg-stone-900">
+      <section aria-labelledby="ai-diagnostic">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30">
+            <Cpu className="h-5 w-5 text-purple-600 dark:text-purple-400" aria-hidden />
           </div>
-          <div>
-            <h3 className="font-bold text-stone-900 dark:text-white">Modèle IA (Ollama)</h3>
+          <div className="flex-1">
+            <h3 id="ai-diagnostic" className="font-bold text-stone-900 dark:text-white">
+              IA locale (Ollama)
+            </h3>
             <p className="text-sm text-stone-500 dark:text-stone-400">
-              Le modèle local utilisé pour toutes les générations.
+              Facultative : le journal, les échéances et le rapport restent utilisables sans elle.
             </p>
           </div>
-        </div>
-        {modelsError ? (
-          <p className="text-sm text-red-500 dark:text-red-400">
-            Ollama injoignable. Lance <code className="font-mono">ollama serve</code> pour choisir un modèle.
-          </p>
-        ) : (
-          <select
-            className="w-full md:w-80 p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
-            value={selectedModel}
-            onChange={(e) => handleModelChange(e.target.value)}
-          >
-            <option value="" className="dark:bg-stone-900">
-              Par défaut ({defaultModel || "..."})
-            </option>
-            {models.map((model) => (
-              <option key={model} value={model} className="dark:bg-stone-900">
-                {model}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-
-      <div>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
-            <Download className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <div>
-            <h3 className="font-bold text-stone-900 dark:text-white">Mes données</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">
-              Local-first: tes données t'appartiennent. Sauvegarde-les ou restaure-les en JSON.
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href={api.data.exportUrl}
-            download
-            className="flex items-center gap-2 px-5 py-2.5 bg-stone-900 dark:bg-emerald-600 text-white rounded-xl font-medium hover:bg-stone-800 dark:hover:bg-emerald-700 transition-all text-sm"
-          >
-            <Download className="w-4 h-4" />
-            Exporter tout (JSON)
-          </a>
           <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={importing}
-            className="flex items-center gap-2 px-5 py-2.5 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-xl font-medium hover:bg-stone-50 dark:hover:bg-stone-800 transition-all text-sm disabled:opacity-50"
+            type="button"
+            onClick={() => void check()}
+            disabled={checking}
+            className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 disabled:opacity-50 dark:hover:bg-stone-800"
           >
-            <Upload className="w-4 h-4" />
-            {importing ? "Import en cours..." : "Importer un export"}
+            <RefreshCw className={`h-4 w-4 ${checking ? "animate-spin" : ""}`} aria-hidden /> Vérifier
           </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImport(file);
-            }}
-          />
         </div>
-      </div>
+        <ul className="mb-4 space-y-2 text-sm" aria-live="polite">
+          <li className="flex items-center gap-2">
+            {status?.reachable ? (
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
+            ) : (
+              <XCircle className="h-4 w-4 text-red-500" aria-hidden />
+            )}
+            {checking ? "Vérification…" : status?.reachable ? "Ollama est joignable." : "Ollama est injoignable."}
+          </li>
+          {status?.reachable && (
+            <li className="flex items-center gap-2">
+              {modelReady ? (
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
+              ) : (
+                <XCircle className="h-4 w-4 text-red-500" aria-hidden />
+              )}
+              Modèle sélectionné : <strong>{effectiveModel}</strong> {modelReady ? "(installé)" : "(non installé)"}
+            </li>
+          )}
+          {status && (
+            <li className="text-xs text-stone-400 dark:text-stone-500">
+              Contexte demandé au modèle : {status.contextTokens} jetons, dont {status.inputBudgetTokens} pour les notes
+              et consignes.
+            </li>
+          )}
+        </ul>
+        {!checking && !status?.reachable && (
+          <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-900/20 dark:text-amber-200">
+            Lance Ollama avec <code className="font-mono">ollama serve</code> (ou démarre le service Docker), puis
+            clique sur « Vérifier ».
+          </p>
+        )}
+        {status?.reachable && !modelReady && (
+          <p className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-900/20 dark:text-amber-200">
+            Installe le modèle avec <code className="font-mono">ollama pull {effectiveModel}</code>, ou choisis un
+            modèle installé ci-dessous.
+          </p>
+        )}
+        <label htmlFor="ai-model" className="mb-1 block text-xs font-semibold text-stone-500 dark:text-stone-400">
+          Modèle utilisé pour les générations
+        </label>
+        <select
+          id="ai-model"
+          className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 md:w-80 dark:border-stone-700 dark:text-white"
+          value={selectedModel}
+          onChange={(e) => handleModelChange(e.target.value)}
+        >
+          <option value="" className="dark:bg-stone-900">
+            Par défaut ({status?.defaultModel || "…"})
+          </option>
+          {options.map((model) => (
+            <option key={model} value={model} className="dark:bg-stone-900">
+              {model}
+            </option>
+          ))}
+        </select>
+      </section>
+
+      <DataBackupSection onRestored={onDataImported} />
     </div>
   );
 }
@@ -134,11 +133,13 @@ export function ProfileTab({
   user,
   onUpdate,
   onDataImported,
+  onAccountDeleted,
 }: {
   profile: UserProfile;
   user: User;
   onUpdate: (p: UserProfile) => void;
-  onDataImported: () => void;
+  onDataImported: () => Promise<void>;
+  onAccountDeleted: () => void;
 }) {
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
@@ -160,12 +161,12 @@ export function ProfileTab({
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl">
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <h2 className="text-3xl font-bold text-stone-900 dark:text-white">Mon Profil</h2>
         {!editing ? (
           <button
             onClick={() => setEditing(true)}
-            className="px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-xl font-medium hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+            className="rounded-xl bg-stone-100 px-4 py-2 font-medium text-stone-700 transition-all hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
           >
             Modifier
           </button>
@@ -176,14 +177,14 @@ export function ProfileTab({
                 setFormData(profile);
                 setEditing(false);
               }}
-              className="px-4 py-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl font-medium transition-all"
+              className="rounded-xl px-4 py-2 font-medium text-stone-500 transition-all hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
             >
               Annuler
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-emerald-600 dark:bg-emerald-500 text-white rounded-xl font-medium hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-all disabled:opacity-50"
+              className="rounded-xl bg-emerald-600 px-4 py-2 font-medium text-white transition-all hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
             >
               {saving ? "Enregistrement..." : "Enregistrer"}
             </button>
@@ -191,26 +192,30 @@ export function ProfileTab({
         )}
       </div>
 
-      <div className="bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-6 rounded-3xl border border-stone-200 bg-white p-8 shadow-sm dark:border-stone-800 dark:bg-stone-900">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-2">
             <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Nom d'affichage</label>
             <input
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.displayName}
               onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
             />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Email</label>
-            <input disabled className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-950 text-stone-500 dark:text-stone-400 outline-none" value={formData.email} />
+            <input
+              disabled
+              className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-stone-500 outline-none dark:border-stone-700 dark:bg-stone-950 dark:text-stone-400"
+              value={formData.email}
+            />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-stone-500 dark:text-stone-400">École</label>
             <input
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.school}
               onChange={(e) => setFormData({ ...formData, school: e.target.value })}
             />
@@ -219,7 +224,7 @@ export function ProfileTab({
             <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Diplôme</label>
             <input
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.degree}
               onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
             />
@@ -228,7 +233,7 @@ export function ProfileTab({
             <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Entreprise</label>
             <input
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.company}
               onChange={(e) => setFormData({ ...formData, company: e.target.value })}
             />
@@ -237,7 +242,7 @@ export function ProfileTab({
             <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Tuteur entreprise</label>
             <input
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.tutorName}
               onChange={(e) => setFormData({ ...formData, tutorName: e.target.value })}
             />
@@ -247,7 +252,7 @@ export function ProfileTab({
             <input
               type="date"
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.internshipStart}
               onChange={(e) => setFormData({ ...formData, internshipStart: e.target.value })}
             />
@@ -257,7 +262,7 @@ export function ProfileTab({
             <input
               type="date"
               disabled={!editing}
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-transparent dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-70 disabled:bg-stone-50 dark:disabled:bg-stone-950"
+              className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.internshipEnd}
               onChange={(e) => setFormData({ ...formData, internshipEnd: e.target.value })}
             />
@@ -266,6 +271,7 @@ export function ProfileTab({
       </div>
 
       <SettingsSection onDataImported={onDataImported} />
+      <AccountSecuritySection onDataCleared={onDataImported} onAccountDeleted={onAccountDeleted} />
     </motion.div>
   );
 }

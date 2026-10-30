@@ -23,5 +23,5 @@ export async function POST(request: Request) {
 
   const id = generateId();
   aiOutputsRepository.add(id, auth.payload.uid, parsed.data);
-  return NextResponse.json({ success: true, id });
+  return NextResponse.json({ success: true, id, output: aiOutputsRepository.get(id, auth.payload.uid) });
 }

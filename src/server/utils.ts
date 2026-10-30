@@ -1,4 +1,8 @@
-export const generateId = () => Math.random().toString(36).substring(2, 15);
+import { randomUUID } from "node:crypto";
+
+export const generateId = () => randomUUID();
+
+export const nowIso = () => new Date().toISOString();
 
 export function parseJsonArray<T>(value: string | null | undefined): T[] {
   if (!value) return [];
@@ -7,5 +11,14 @@ export function parseJsonArray<T>(value: string | null | undefined): T[] {
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
+  }
+}
+
+export function parseJson<T>(value: string | null | undefined, fallback: T): T {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
   }
 }

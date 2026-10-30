@@ -1,18 +1,70 @@
+import type { z } from "zod";
+
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "phi4-mini";
+export const DEFAULT_MODEL = process.env.OLLAMA_MODEL || "phi4-mini";
 
-type ChatMode = "text" | "json";
+function positiveInteger(value: string | undefined, fallback: number) {
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
 
-type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
+/** Context window requested from Ollama; its own default (2048) silently truncates long journals. */
+export const CONTEXT_TOKENS = positiveInteger(process.env.OLLAMA_NUM_CTX, 8192);
+/** Room kept for the answer inside the context window. */
+export const OUTPUT_RESERVE_TOKENS = Math.min(2048, Math.floor(CONTEXT_TOKENS / 4));
+export const INPUT_BUDGET_TOKENS = CONTEXT_TOKENS - OUTPUT_RESERVE_TOKENS;
+const REQUEST_TIMEOUT_MS = positiveInteger(process.env.OLLAMA_TIMEOUT_MS, 300_000);
 
-type ChatOptions = {
+export type AiErrorCode =
+  | "unreachable"
+  | "model_missing"
+  | "model_error"
+  | "timeout"
+  | "cancelled"
+  | "incomplete"
+  | "invalid_output"
+  | "invalid_input"
+  | "context_too_large";
+
+const STATUS_BY_CODE: Record<AiErrorCode, number> = {
+  unreachable: 503,
+  model_missing: 424,
+  model_error: 502,
+  timeout: 504,
+  cancelled: 499,
+  incomplete: 502,
+  invalid_output: 502,
+  invalid_input: 400,
+  context_too_large: 413,
+};
+
+export class AiError extends Error {
+  readonly status: number;
+  constructor(
+    readonly code: AiErrorCode,
+    message: string,
+    readonly details?: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = "AiError";
+    this.status = STATUS_BY_CODE[code];
+  }
+}
+
+export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
+
+export type ChatOptions = {
   userPrompt?: string;
   messages?: ChatMessage[];
   systemPrompt?: string;
-  mode?: ChatMode;
+  mode?: "text" | "json";
   temperature?: number;
   model?: string;
 };
+
+export function resolveModel(model?: string) {
+  return model?.trim() || DEFAULT_MODEL;
+}
 
 function buildMessages(options: ChatOptions): ChatMessage[] {
   const { userPrompt, messages, systemPrompt } = options;
@@ -24,84 +76,144 @@ function buildMessages(options: ChatOptions): ChatMessage[] {
 }
 
 function buildBody(options: ChatOptions, stream: boolean) {
-  const { mode = "text", temperature = 0.2, model } = options;
+  const { mode = "text", temperature = 0.2 } = options;
   return JSON.stringify({
-    model: model || OLLAMA_MODEL,
+    model: resolveModel(options.model),
     stream,
     format: mode === "json" ? "json" : undefined,
-    options: { temperature },
+    options: { temperature, num_ctx: CONTEXT_TOKENS },
     messages: buildMessages(options),
   });
 }
 
-export async function chatWithOllama(options: ChatOptions) {
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: buildBody(options, false),
-  });
+/** Combine the caller's cancellation with the server timeout, keeping track of which fired. */
+function withTimeout(signal?: AbortSignal) {
+  const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+  const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
+  const abortError = () =>
+    timeout.aborted
+      ? new AiError(
+          "timeout",
+          `Le modèle n'a pas répondu dans le délai de ${Math.round(REQUEST_TIMEOUT_MS / 1000)} s. Réduis la sélection ou réessaie.`,
+        )
+      : new AiError("cancelled", "Génération annulée.");
+  return { signal: combined, abortError };
+}
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Ollama error (${response.status}): ${errText}`);
+async function readOllamaError(response: Response, model: string): Promise<AiError> {
+  const text = await response.text().catch(() => "");
+  let message = text;
+  try {
+    message = String(JSON.parse(text)?.error || text);
+  } catch {
+    // Not JSON: keep the raw text.
   }
+  if (response.status === 404 && /not found|pull/i.test(message)) {
+    return new AiError("model_missing", `Le modèle « ${model} » n'est pas installé. Lance : ollama pull ${model}`, {
+      model,
+    });
+  }
+  return new AiError(
+    "model_error",
+    `Erreur du modèle (${response.status}) : ${message.slice(0, 300) || "réponse vide"}`,
+  );
+}
 
-  const data = await response.json();
+async function postChat(options: ChatOptions, stream: boolean, signal: AbortSignal, abortError: () => AiError) {
+  let response: Response;
+  try {
+    response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: buildBody(options, stream),
+      signal,
+    });
+  } catch {
+    if (signal.aborted) throw abortError();
+    throw new AiError("unreachable", "Impossible de contacter Ollama. Vérifie qu'il tourne (ollama serve).");
+  }
+  if (!response.ok) throw await readOllamaError(response, resolveModel(options.model));
+  return response;
+}
+
+export async function chatWithOllama(options: ChatOptions, callerSignal?: AbortSignal): Promise<string> {
+  const { signal, abortError } = withTimeout(callerSignal);
+  const response = await postChat(options, false, signal, abortError);
+  let data: { message?: { content?: unknown }; error?: unknown };
+  try {
+    data = await response.json();
+  } catch {
+    if (signal.aborted) throw abortError();
+    throw new AiError("invalid_output", "Le modèle a renvoyé une réponse illisible. Réessaie.");
+  }
+  if (data?.error) throw new AiError("model_error", `Erreur du modèle : ${String(data.error).slice(0, 300)}`);
   return String(data?.message?.content || "");
 }
 
+type StreamLine = { message?: { content?: unknown }; error?: unknown; done?: unknown };
+
 /**
- * Streams the model response as plain text chunks.
- * Ollama's streaming API returns one JSON object per line.
+ * Yields text fragments. Throws an AiError when the model reports an error, the
+ * caller cancels, the timeout fires, or the stream ends before Ollama's final line.
  */
-export async function streamChatWithOllama(options: ChatOptions): Promise<ReadableStream<Uint8Array>> {
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: buildBody(options, true),
-  });
-
-  if (!response.ok || !response.body) {
-    const errText = await response.text().catch(() => "");
-    throw new Error(`Ollama error (${response.status}): ${errText}`);
-  }
-
+export async function* streamChatWithOllama(
+  options: ChatOptions,
+  callerSignal?: AbortSignal,
+): AsyncGenerator<string, void, undefined> {
+  const { signal, abortError } = withTimeout(callerSignal);
+  const response = await postChat(options, true, signal, abortError);
+  if (!response.body) throw new AiError("model_error", "Le modèle n'a renvoyé aucun contenu.");
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
   let buffered = "";
+  let finished = false;
 
-  return new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const { done, value } = await reader.read();
-      if (done) {
-        controller.close();
-        return;
+  function parse(line: string): string {
+    if (!line.trim()) return "";
+    let parsed: StreamLine;
+    try {
+      parsed = JSON.parse(line);
+    } catch {
+      throw new AiError("invalid_output", "Le flux du modèle contient une ligne illisible.");
+    }
+    if (parsed.error) throw new AiError("model_error", `Erreur du modèle : ${String(parsed.error).slice(0, 300)}`);
+    if (parsed.done === true) finished = true;
+    const content = parsed.message?.content;
+    return typeof content === "string" ? content : "";
+  }
+
+  try {
+    for (;;) {
+      let chunk: ReadableStreamReadResult<Uint8Array>;
+      try {
+        chunk = await reader.read();
+      } catch {
+        if (signal.aborted) throw abortError();
+        throw new AiError("incomplete", "La connexion au modèle a été interrompue avant la fin de la réponse.");
       }
-
-      buffered += decoder.decode(value, { stream: true });
+      if (chunk.done) break;
+      buffered += decoder.decode(chunk.value, { stream: true });
       const lines = buffered.split("\n");
-      buffered = lines.pop() || "";
-
+      buffered = lines.pop() ?? "";
       for (const line of lines) {
-        if (!line.trim()) continue;
-        try {
-          const parsed = JSON.parse(line);
-          const content = parsed?.message?.content;
-          if (content) controller.enqueue(encoder.encode(content));
-        } catch {
-          // Ligne partielle ou bruit: ignorée
-        }
+        const text = parse(line);
+        if (text) yield text;
       }
-    },
-    cancel() {
-      reader.cancel();
-    },
-  });
+    }
+    // The final JSON object is not always followed by a newline.
+    buffered += decoder.decode();
+    const last = parse(buffered);
+    if (last) yield last;
+    if (!finished) {
+      throw new AiError("incomplete", "La réponse du modèle s'est arrêtée avant la fin. Le texte reçu est incomplet.");
+    }
+  } finally {
+    if (!finished) await reader.cancel().catch(() => undefined);
+  }
 }
 
-export async function listOllamaModels(): Promise<string[]> {
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
+export async function listOllamaModels(timeoutMs = 5000): Promise<string[]> {
+  const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`, { signal: AbortSignal.timeout(timeoutMs) });
   if (!response.ok) {
     throw new Error(`Ollama error (${response.status})`);
   }
@@ -111,6 +223,41 @@ export async function listOllamaModels(): Promise<string[]> {
 }
 
 export function safeJsonParse<T>(value: string): T {
-  const cleaned = value.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "");
+  const cleaned = value
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "");
   return JSON.parse(cleaned) as T;
+}
+
+/** Ask for JSON and accept it only if it matches the task's schema. */
+export async function chatJson<S extends z.ZodType>(
+  options: Omit<ChatOptions, "mode">,
+  schema: S,
+  signal?: AbortSignal,
+): Promise<z.infer<S>> {
+  const text = await chatWithOllama({ ...options, mode: "json" }, signal);
+  let raw: unknown;
+  try {
+    raw = safeJsonParse(text);
+  } catch {
+    throw new AiError(
+      "invalid_output",
+      "Le modèle n'a pas renvoyé de JSON valide. Réessaie ou choisis un autre modèle.",
+    );
+  }
+  const parsed = schema.safeParse(raw);
+  if (!parsed.success) {
+    throw new AiError(
+      "invalid_output",
+      "La réponse du modèle ne respecte pas le format attendu. Réessaie ou choisis un autre modèle.",
+      {
+        issues: parsed.error.issues
+          .slice(0, 5)
+          .map((issue) => `${issue.path.join(".") || "réponse"}: ${issue.message}`),
+      },
+    );
+  }
+  return parsed.data;
 }

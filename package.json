@@ -17,6 +17,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "db:recover": "node scripts/db-recover.mjs",
+    "account:reset-password": "node scripts/reset-password.mjs",
     "check": "npm run lint && npm run lint:code && npm run test && npm run build"
   },
   "dependencies": {

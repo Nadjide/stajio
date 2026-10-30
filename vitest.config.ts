@@ -10,6 +10,12 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
+    isolate: true,
+    setupFiles: ["./tests/setup.ts"],
+    env: {
+      STAJIO_DB_PATH: ":memory:",
+      JWT_SECRET: "stajio-vitest-isolated-secret-only-for-tests",
+    },
     include: ["tests/**/*.test.ts"],
     coverage: {
       provider: "v8",

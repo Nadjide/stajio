@@ -11,6 +11,7 @@ export default [
       "node_modules/**",
       "dist/**",
       "coverage/**",
+      ".stajio-e2e-*/**",
       "*.config.js",
       "*.config.mjs",
     ],

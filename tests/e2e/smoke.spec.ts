@@ -20,6 +20,6 @@ test.describe("Parcours principal", () => {
     await page.getByRole("button", { name: "Créer un compte" }).click();
 
     // Après inscription + connexion auto, l'écran de configuration du profil s'affiche
-    await expect(page.getByPlaceholder("jean@exemple.com")).toBeHidden({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "Configure ton profil" })).toBeVisible({ timeout: 15_000 });
   });
 });
