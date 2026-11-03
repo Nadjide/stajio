@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { buildMarkdownPdf, parseMarkdown, toPdfText } from "../../src/services/pdf";
-import { assembleReportMarkdown, missingBriefInformation, reportToComplete } from "../../src/utils/report";
+import {
+  assembleReportMarkdown,
+  missingBriefInformation,
+  reportToComplete,
+  stripRepeatedTitle,
+} from "../../src/utils/report";
 import { countToComplete } from "../../src/utils/ai-budget";
 import { getInternshipMidpoint, getInternshipWeekLabel, getPeriodPosition } from "../../src/utils/internship";
 import { skillSuggestions } from "../../src/utils/skills";
@@ -63,6 +68,15 @@ describe("Report helpers", () => {
     content,
     generatedAt: null,
     model: null,
+  });
+
+  it("drops a generated heading that only repeats the section title", () => {
+    expect(stripRepeatedTitle("### Missions réalisées\n\n#### API\nTexte", "Missions réalisées")).toBe(
+      "#### API\nTexte",
+    );
+    expect(stripRepeatedTitle("## missions réalisées :\nTexte", "Missions réalisées")).toBe("Texte");
+    expect(stripRepeatedTitle("### API d'historique\nTexte", "Missions réalisées")).toBe("### API d'historique\nTexte");
+    expect(stripRepeatedTitle("Texte sans titre", "Missions réalisées")).toBe("Texte sans titre");
   });
 
   it("assembles the corrected sections in order and counts passages to complete", () => {
