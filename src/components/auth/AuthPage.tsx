@@ -121,7 +121,7 @@ export function AuthPage({ onLogin }: { onLogin: (user: User) => void }) {
           <button
             disabled={loading}
             type="submit"
-            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-stone-900 py-4 font-medium text-white transition-all hover:bg-stone-800 disabled:opacity-50 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-stone-900 py-4 font-medium text-white transition-all hover:bg-stone-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" aria-label="Chargement" />

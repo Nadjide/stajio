@@ -66,7 +66,7 @@ function DefenseView({ output }: { output: AiOutput }) {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center gap-4">
-        <p className="flex-1 text-xs text-stone-400 dark:text-stone-500">
+        <p className="flex-1 text-xs text-stone-500 dark:text-stone-400">
           {output.model ? `Modèle ${output.model} · ` : ""}
           {output.sources?.length ? `${output.sources.length} notes sources · ` : ""}
           {format(parseISO(output.createdAt), "dd MMM yyyy, HH:mm", { locale: fr })}
@@ -87,7 +87,7 @@ function DefenseView({ output }: { output: AiOutput }) {
               `Stajio_soutenance_${format(new Date(), "yyyy-MM-dd")}.pdf`,
             )
           }
-          className="flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400"
+          className="flex items-center gap-2 text-sm font-medium text-emerald-700 dark:text-emerald-400"
         >
           <Download className="h-4 w-4" aria-hidden /> Exporter PDF
         </button>
@@ -97,7 +97,7 @@ function DefenseView({ output }: { output: AiOutput }) {
         <ol className="space-y-2">
           {prep.plan.map((item, i) => (
             <li key={i} className="flex items-center gap-3 text-stone-700 dark:text-stone-300">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-bold text-stone-500 dark:bg-stone-800 dark:text-stone-400">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-400">
                 {i + 1}
               </span>
               {item}
@@ -303,7 +303,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
               <History className="h-4 w-4" aria-hidden /> Résultats enregistrés ({history.length})
             </h3>
             {history.length === 0 && (
-              <p className="p-6 text-sm text-stone-400 dark:text-stone-500">
+              <p className="p-6 text-sm text-stone-500 dark:text-stone-400">
                 Aucun résultat enregistré pour l'instant.
               </p>
             )}
@@ -314,7 +314,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
                     <p className="truncate text-sm font-semibold text-stone-800 hover:text-emerald-600 dark:text-stone-200">
                       {output.title}
                     </p>
-                    <p className="text-xs text-stone-400 dark:text-stone-500">
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
                       {TYPE_LABELS[output.type] ?? output.type} ·{" "}
                       {format(parseISO(output.createdAt), "dd MMM yyyy, HH:mm", { locale: fr })}
                       {output.updatedAt ? " · corrigé" : ""}

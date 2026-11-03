@@ -32,7 +32,7 @@ export function AssistantTab({ logs }: { logs: LogEntry[] }) {
             role="tab"
             aria-selected={mode === "chat"}
             onClick={() => setMode("chat")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${mode === "chat" ? "bg-white text-stone-900 shadow-sm dark:bg-stone-900 dark:text-white" : "text-stone-500 dark:text-stone-400"}`}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${mode === "chat" ? "bg-white text-stone-900 shadow-sm dark:bg-stone-900 dark:text-white" : "text-stone-600 dark:text-stone-400"}`}
           >
             <MessageCircle className="h-4 w-4" aria-hidden /> Discussion
           </button>
@@ -41,7 +41,7 @@ export function AssistantTab({ logs }: { logs: LogEntry[] }) {
             role="tab"
             aria-selected={mode === "simulation"}
             onClick={() => setMode("simulation")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${mode === "simulation" ? "bg-white text-stone-900 shadow-sm dark:bg-stone-900 dark:text-white" : "text-stone-500 dark:text-stone-400"}`}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${mode === "simulation" ? "bg-white text-stone-900 shadow-sm dark:bg-stone-900 dark:text-white" : "text-stone-600 dark:text-stone-400"}`}
           >
             <GraduationCap className="h-4 w-4" aria-hidden /> Simulation soutenance
           </button>

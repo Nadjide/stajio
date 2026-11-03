@@ -56,7 +56,7 @@ export function NoteComposer({
         <h3 id="new-note-title" className="font-bold text-stone-900 dark:text-white">
           Nouvelle note
         </h3>
-        <p className="text-xs text-stone-400 dark:text-stone-500" aria-live="polite">
+        <p className="text-xs text-stone-500 dark:text-stone-400" aria-live="polite">
           {DRAFT_STATUS_LABELS[draft.status]}
         </p>
       </div>
@@ -113,13 +113,13 @@ export function NoteComposer({
           type="button"
           onClick={save}
           disabled={!canSave}
-          className="flex items-center gap-2 rounded-xl bg-stone-900 px-6 py-2 font-medium text-white transition-all hover:bg-stone-800 disabled:opacity-50 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+          className="flex items-center gap-2 rounded-xl bg-stone-900 px-6 py-2 font-medium text-white transition-all hover:bg-stone-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
         >
           {saving ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : <Save className="h-5 w-5" aria-hidden />}
           Enregistrer la note
         </button>
       </div>
-      <p className="text-xs text-stone-400 dark:text-stone-500">
+      <p className="text-xs text-stone-500 dark:text-stone-400">
         L'IA n'est pas nécessaire pour enregistrer. Tu pourras ensuite structurer la note avec l'IA ; ton texte
         d'origine sera conservé.
       </p>

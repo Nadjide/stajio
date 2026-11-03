@@ -144,7 +144,7 @@ export function DeadlinesTab({ deadlines, onRefresh }: Props) {
           <button
             onClick={addDeadline}
             disabled={!form.title.trim() || !form.date}
-            className="rounded-xl bg-stone-900 px-6 py-3 font-medium text-white transition-all hover:bg-stone-800 disabled:opacity-50 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+            className="rounded-xl bg-stone-900 px-6 py-3 font-medium text-white transition-all hover:bg-stone-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
           >
             Ajouter
           </button>
@@ -207,7 +207,7 @@ export function DeadlinesTab({ deadlines, onRefresh }: Props) {
                   </button>
                   <button
                     onClick={() => saveEdit(deadline.id)}
-                    className="rounded-xl bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                    className="rounded-xl bg-emerald-700 px-4 py-2 font-medium text-white hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-800"
                   >
                     Enregistrer
                   </button>
@@ -221,7 +221,7 @@ export function DeadlinesTab({ deadlines, onRefresh }: Props) {
               key={deadline.id}
               className={`group flex items-center gap-4 rounded-2xl border p-6 transition-all ${
                 deadline.completed
-                  ? "border-stone-100 bg-stone-50 opacity-60 dark:border-stone-800 dark:bg-stone-800/50"
+                  ? "border-stone-100 bg-stone-50 dark:border-stone-800 dark:bg-stone-800/50"
                   : "border-stone-200 bg-white shadow-sm hover:border-emerald-200 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-emerald-700"
               }`}
             >
@@ -247,7 +247,7 @@ export function DeadlinesTab({ deadlines, onRefresh }: Props) {
                 <h4
                   className={`truncate font-semibold ${
                     deadline.completed
-                      ? "text-stone-400 line-through dark:text-stone-500"
+                      ? "text-stone-500 line-through dark:text-stone-400"
                       : "text-stone-900 dark:text-white"
                   }`}
                 >
@@ -266,7 +266,7 @@ export function DeadlinesTab({ deadlines, onRefresh }: Props) {
                 className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase ${
                   deadline.type === "school"
                     ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-                    : "bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
+                    : "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
                 }`}
               >
                 {TYPE_LABELS[deadline.type]}

@@ -212,7 +212,7 @@ function SessionView({ simulation, onChange }: { simulation: Simulation; onChang
       ) : (
         <div className="space-y-4">
           <div className="rounded-2xl bg-stone-50 p-5 dark:bg-stone-800/50">
-            <p className="mb-2 text-xs font-bold text-stone-400 uppercase">Ta réponse</p>
+            <p className="mb-2 text-xs font-bold text-stone-500 uppercase dark:text-stone-400">Ta réponse</p>
             <p className="text-sm whitespace-pre-wrap text-stone-600 dark:text-stone-300">{step.answer}</p>
           </div>
           <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 dark:border-blue-800 dark:bg-blue-900/20">
@@ -225,7 +225,7 @@ function SessionView({ simulation, onChange }: { simulation: Simulation; onChang
             <p className="mb-4 text-sm text-stone-700 dark:text-stone-300">{step.evaluation.feedback}</p>
             {step.evaluation.improvedAnswer && (
               <>
-                <p className="mb-2 text-xs font-bold text-stone-400 uppercase">Formulation suggérée</p>
+                <p className="mb-2 text-xs font-bold text-stone-500 uppercase dark:text-stone-400">Formulation suggérée</p>
                 <p className="text-sm text-stone-600 italic dark:text-stone-400">{step.evaluation.improvedAnswer}</p>
               </>
             )}
@@ -343,7 +343,7 @@ export function SimulationPanel({ hasLogs }: { hasLogs: boolean }) {
           <button
             type="button"
             onClick={() => controller.current?.abort()}
-            className="w-full rounded-xl px-4 py-2 text-sm text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="w-full rounded-xl px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
           >
             Annuler la préparation
           </button>
@@ -365,7 +365,7 @@ export function SimulationPanel({ hasLogs }: { hasLogs: boolean }) {
                   className="min-w-0 flex-1 rounded-lg px-2 py-1.5 text-left"
                 >
                   <span className="block truncate text-sm text-stone-700 dark:text-stone-300">{simulation.title}</span>
-                  <span className="text-xs text-stone-400">
+                  <span className="text-xs text-stone-500 dark:text-stone-400">
                     {simulation.status === "finished"
                       ? `Terminée${average !== null ? ` · ${average}/10` : ""}`
                       : `En cours · question ${Math.min(simulation.currentStep + 1, simulation.steps.length)}/${simulation.steps.length}`}
@@ -375,7 +375,7 @@ export function SimulationPanel({ hasLogs }: { hasLogs: boolean }) {
                   type="button"
                   onClick={() => void remove(simulation)}
                   aria-label={`Supprimer ${simulation.title}`}
-                  className="rounded p-1 text-stone-400 hover:text-red-600"
+                  className="rounded p-1 text-stone-500 hover:text-red-600 dark:text-stone-400"
                 >
                   <Trash2 className="h-3.5 w-3.5" aria-hidden />
                 </button>

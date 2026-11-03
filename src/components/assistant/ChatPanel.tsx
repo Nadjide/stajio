@@ -49,7 +49,7 @@ function Bubble({
         )}
       </div>
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-3 ${isUser ? "bg-emerald-600 text-white" : "border border-stone-200 bg-white text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200"}`}
+        className={`max-w-[85%] rounded-2xl px-4 py-3 ${isUser ? "bg-emerald-700 text-white" : "border border-stone-200 bg-white text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200"}`}
       >
         {isUser ? (
           <p className="text-sm whitespace-pre-wrap">{content}</p>
@@ -203,11 +203,11 @@ export function ChatPanel() {
           type="button"
           onClick={() => void create()}
           disabled={!!streaming}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
         >
           <Plus className="h-4 w-4" aria-hidden /> Nouvelle conversation
         </button>
-        {conversations === null && <p className="p-2 text-sm text-stone-400">Chargement…</p>}
+        {conversations === null && <p className="p-2 text-sm text-stone-500 dark:text-stone-400">Chargement…</p>}
         <ul className="max-h-72 space-y-1 overflow-y-auto lg:max-h-[60vh]">
           {conversations?.map((conversation) => (
             <li
@@ -257,7 +257,7 @@ export function ChatPanel() {
                       setTitle(conversation.title);
                     }}
                     aria-label={`Renommer ${conversation.title}`}
-                    className="rounded p-1 text-stone-400 hover:text-emerald-600"
+                    className="rounded p-1 text-stone-500 hover:text-emerald-600 dark:text-stone-400"
                   >
                     <Pencil className="h-3.5 w-3.5" aria-hidden />
                   </button>
@@ -266,7 +266,7 @@ export function ChatPanel() {
                     disabled={!!streaming}
                     onClick={() => void remove(conversation)}
                     aria-label={`Supprimer ${conversation.title}`}
-                    className="rounded p-1 text-stone-400 hover:text-red-600"
+                    className="rounded p-1 text-stone-500 hover:text-red-600 dark:text-stone-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden />
                   </button>
@@ -360,7 +360,7 @@ export function ChatPanel() {
               onClick={() => void send()}
               disabled={!input.trim()}
               aria-label="Envoyer le message"
-              className="flex items-center rounded-2xl bg-emerald-600 px-5 text-white disabled:opacity-50 dark:bg-emerald-500"
+              className="flex items-center rounded-2xl bg-emerald-700 px-5 text-white disabled:opacity-50 dark:bg-emerald-700"
             >
               {streaming ? (
                 <Loader2 className="h-5 w-5 animate-spin" aria-hidden />

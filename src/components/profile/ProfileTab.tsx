@@ -60,12 +60,12 @@ function SettingsSection({ onDataImported }: { onDataImported: () => Promise<voi
             type="button"
             onClick={() => void check()}
             disabled={checking}
-            className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 disabled:opacity-50 dark:hover:bg-stone-800"
+            className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-100 disabled:opacity-50 dark:text-stone-400 dark:hover:bg-stone-800"
           >
             <RefreshCw className={`h-4 w-4 ${checking ? "animate-spin" : ""}`} aria-hidden /> Vérifier
           </button>
         </div>
-        <ul className="mb-4 space-y-2 text-sm" aria-live="polite">
+        <ul className="mb-4 space-y-2 text-sm text-stone-700 dark:text-stone-200" aria-live="polite">
           <li className="flex items-center gap-2">
             {status?.reachable ? (
               <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
@@ -85,7 +85,7 @@ function SettingsSection({ onDataImported }: { onDataImported: () => Promise<voi
             </li>
           )}
           {status && (
-            <li className="text-xs text-stone-400 dark:text-stone-500">
+            <li className="text-xs text-stone-500 dark:text-stone-400">
               Contexte demandé au modèle : {status.contextTokens} jetons, dont {status.inputBudgetTokens} pour les notes
               et consignes.
             </li>
@@ -177,14 +177,14 @@ export function ProfileTab({
                 setFormData(profile);
                 setEditing(false);
               }}
-              className="rounded-xl px-4 py-2 font-medium text-stone-500 transition-all hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
+              className="rounded-xl px-4 py-2 font-medium text-stone-600 transition-all hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
             >
               Annuler
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-xl bg-emerald-600 px-4 py-2 font-medium text-white transition-all hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+              className="rounded-xl bg-emerald-700 px-4 py-2 font-medium text-white transition-all hover:bg-emerald-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
             >
               {saving ? "Enregistrement..." : "Enregistrer"}
             </button>
@@ -195,8 +195,11 @@ export function ProfileTab({
       <div className="space-y-6 rounded-3xl border border-stone-200 bg-white p-8 shadow-sm dark:border-stone-800 dark:bg-stone-900">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Nom d'affichage</label>
+            <label htmlFor="profile-displayName" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Nom d'affichage
+            </label>
             <input
+              id="profile-displayName"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.displayName}
@@ -204,16 +207,22 @@ export function ProfileTab({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Email</label>
+            <label htmlFor="profile-email" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Email
+            </label>
             <input
+              id="profile-email"
               disabled
               className="w-full rounded-xl border border-stone-200 bg-stone-50 p-3 text-stone-500 outline-none dark:border-stone-700 dark:bg-stone-950 dark:text-stone-400"
               value={formData.email}
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">École</label>
+            <label htmlFor="profile-school" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              École
+            </label>
             <input
+              id="profile-school"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.school}
@@ -221,8 +230,11 @@ export function ProfileTab({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Diplôme</label>
+            <label htmlFor="profile-degree" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Diplôme
+            </label>
             <input
+              id="profile-degree"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.degree}
@@ -230,8 +242,11 @@ export function ProfileTab({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Entreprise</label>
+            <label htmlFor="profile-company" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Entreprise
+            </label>
             <input
+              id="profile-company"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.company}
@@ -239,8 +254,11 @@ export function ProfileTab({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Tuteur entreprise</label>
+            <label htmlFor="profile-tutorName" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Tuteur entreprise
+            </label>
             <input
+              id="profile-tutorName"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
               value={formData.tutorName}
@@ -248,8 +266,11 @@ export function ProfileTab({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Début du stage</label>
+            <label htmlFor="profile-internshipStart" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Début du stage
+            </label>
             <input
+              id="profile-internshipStart"
               type="date"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"
@@ -258,8 +279,11 @@ export function ProfileTab({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-stone-500 dark:text-stone-400">Fin du stage</label>
+            <label htmlFor="profile-internshipEnd" className="text-sm font-medium text-stone-500 dark:text-stone-400">
+              Fin du stage
+            </label>
             <input
+              id="profile-internshipEnd"
               type="date"
               disabled={!editing}
               className="w-full rounded-xl border border-stone-200 bg-transparent p-3 outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-stone-50 disabled:opacity-70 dark:border-stone-700 dark:text-white dark:disabled:bg-stone-950"

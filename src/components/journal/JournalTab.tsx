@@ -77,7 +77,7 @@ export function JournalTab({ profile, logs, skills, status, onRefresh, onSkillsC
           <button
             type="button"
             onClick={() => setComposing(true)}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white transition-all hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+            className="flex items-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 font-medium text-white transition-all hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-800"
           >
             <Plus className="h-5 w-5" aria-hidden />
             Nouvelle note
@@ -98,7 +98,7 @@ export function JournalTab({ profile, logs, skills, status, onRefresh, onSkillsC
               document.getElementById(`note-${structureId}`)?.scrollIntoView({ behavior: "smooth" });
               setStructureId(`structure:${structureId}`);
             }}
-            className="rounded-lg bg-emerald-600 px-3 py-1.5 font-medium text-white"
+            className="rounded-lg bg-emerald-700 px-3 py-1.5 font-medium text-white"
           >
             Structurer avec l'IA
           </button>
@@ -116,7 +116,7 @@ export function JournalTab({ profile, logs, skills, status, onRefresh, onSkillsC
           <label htmlFor="journal-search" className="sr-only">
             Rechercher un mot dans les notes
           </label>
-          <Search className="pointer-events-none absolute top-3.5 left-3 h-4 w-4 text-stone-400" aria-hidden />
+          <Search className="pointer-events-none absolute top-3.5 left-3 h-4 w-4 text-stone-500 dark:text-stone-400" aria-hidden />
           <input
             id="journal-search"
             type="search"

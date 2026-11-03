@@ -182,12 +182,12 @@ export function ProfileSetupPage({ user, onComplete }: { user: User; onComplete:
       >
         <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+            <p className="text-xs font-bold tracking-wider text-emerald-700 uppercase dark:text-emerald-400">
               Étape {step} sur 2
             </p>
             <h2 className="text-2xl font-bold text-stone-900 dark:text-white">Configure ton profil</h2>
           </div>
-          <p className="text-xs text-stone-400 dark:text-stone-500" aria-live="polite">
+          <p className="text-xs text-stone-500 dark:text-stone-400" aria-live="polite">
             {DRAFT_STATUS_LABELS[draft.status]}
           </p>
         </div>
@@ -237,7 +237,7 @@ export function ProfileSetupPage({ user, onComplete }: { user: User; onComplete:
               <button
                 type="submit"
                 disabled={draft.status === "loading"}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 font-medium text-white transition-all hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 py-4 font-medium text-white transition-all hover:bg-emerald-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
               >
                 Continuer vers les échéances <ArrowRight className="h-5 w-5" aria-hidden />
               </button>
@@ -304,7 +304,7 @@ export function ProfileSetupPage({ user, onComplete }: { user: User; onComplete:
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 font-medium text-white transition-all hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-700 py-4 font-medium text-white transition-all hover:bg-emerald-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
               >
                 {submitting && <Loader2 className="h-5 w-5 animate-spin" aria-hidden />}
                 {submitting ? "Enregistrement…" : "Terminer la configuration"}

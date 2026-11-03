@@ -11,7 +11,7 @@ export function MarkdownPreview({
   content: string;
   empty?: string;
 }) {
-  if (!content.trim()) return <p className="text-sm text-stone-400 italic dark:text-stone-500">{empty}</p>;
+  if (!content.trim()) return <p className="text-sm text-stone-500 italic dark:text-stone-400">{empty}</p>;
   const marked = content.replace(MARKER, (_match, text: string) => `\`${SENTINEL}${text.replace(/`/g, "'")}\``);
   return (
     <div className="prose prose-stone dark:prose-invert max-w-none">
