@@ -149,14 +149,14 @@ Dépendance : tous les lots précédents. Les tests ciblés restent à réaliser
 
 **Sortie du lot :** les critères de la section 4 passent, aucun blocage du parcours central n'est ouvert, et les limites connues sont documentées.
 
-**État au 28 octobre 2026 : en cours.**
+**État au 3 novembre 2026 : en cours, bloqué par la recette étudiants (V1-705) et le choix de version.**
 
 - V1-701 : fait. Parcours automatisés dans `tests/e2e/v1-journey.spec.ts` (configuration reprise, journal sans Ollama, structuration simulée, rapport corrigé, versionné et exporté) en plus des tests de sauvegarde et de sécurité existants.
-- V1-702 : partiel. Libellés reliés aux champs, boutons à icône nommés, actions visibles au clavier et sur mobile, états de chargement, de liste vide et d'erreur sur les écrans principaux. Un audit complet (lecteur d'écran, contraste, navigation clavier écran par écran) reste à faire.
+- V1-702 : fait pour les contrôles automatisables. `tests/e2e/accessibility.spec.ts` passe axe-core (WCAG 2.2 AA) sur tous les écrans en thème clair, en thème sombre et à 360 px, sans débordement horizontal, et vérifie le lien « Aller au contenu », le focus visible et le menu mobile (focus déplacé, fermeture par Échap, hors du parcours clavier une fois fermé). Corrigés : contrastes du texte secondaire, des boutons verts, des badges et des échéances terminées, champs du profil sans libellé associé, texte noir en thème sombre. Reste manuel : un passage au lecteur d'écran (NVDA ou VoiceOver).
 - V1-703 : fait. `/api/health` distingue application, base et Ollama (healthcheck Docker et sonde Kubernetes) ; les journaux serveur sont structurés et ne contiennent que des codes et durées.
-- V1-704 : partiel. Prérequis, variables, mise à jour et dépannage documentés dans le README ; installation Docker propre et mesures de durée sur la machine de référence à réaliser.
-- V1-705 : à faire, hors code : recette par 3 à 5 étudiants avec [SPEC_V1.md](SPEC_V1.md).
-- V1-706 : partiel. Les commandes de la CI (`lint`, `lint:code`, `test`, `build`, `test:e2e`) passent localement ; [notes de version](RELEASE_NOTES.md) rédigées ; captures d'écran du README et choix du numéro de version restent à faire.
+- V1-704 : fait. Installation Docker propre vérifiée le 30 octobre 2026 (build 10 min 30 s, deux conteneurs sains, `/api/health` au vert), puis mise à jour par reconstruction (40 s avec le cache) sans perte de données. La récupération de [DATA_RECOVERY.md](DATA_RECOVERY.md) a été exécutée avec Docker sur un instantané : copie vérifiée, écrasement refusé, application démarrée sur la copie avec les données intactes. Un Ollama déjà installé occupait le port `11434` : `OLLAMA_HOST_PORT` est ajouté et documenté. Durées mesurées et relecture des générations dans [AI_REFERENCE_EXAMPLES.md](AI_REFERENCE_EXAMPLES.md) ; les écarts de format de phi4-mini (plan imbriqué, questions en chaînes, titre répété) sont normalisés. Le fichier `.ics` est relu sans erreur par la bibliothèque `icalendar` (lignes de 75 octets maximum, CRLF, accents et séparateurs échappés) ; son import dans un agenda réel reste à faire par un humain.
+- V1-705 : à faire, hors code : recette par 3 à 5 étudiants avec [SPEC_V1.md](SPEC_V1.md). Elle ne peut pas être réalisée par l'équipe de développement.
+- V1-706 : partiel. Les commandes de la CI passent localement ; [notes de version](RELEASE_NOTES.md) et captures du README mises à jour. Reste à choisir le numéro de version : aucun tag ni release GitHub n'existe, `1.0.0` est donc libre.
 
 ## 4. Définition de « V1 terminée »
 
@@ -188,4 +188,4 @@ Les vérifications automatisées doivent utiliser une base dédiée. La généra
 
 ## 6. Prochaines étapes
 
-Les lots 0 à 6 sont livrés. Avant la diffusion de la V1, terminer le **lot 7** : relire les générations réelles sur les exemples de référence, vérifier une installation Docker propre et l'import `.ics`, compléter l'audit d'accessibilité, faire passer la recette à des étudiants, puis mettre à jour les captures et choisir le numéro de version.
+Les lots 0 à 6 sont livrés et le lot 7 est vérifié pour tout ce qui ne dépend pas d'utilisateurs réels. Avant la diffusion de la V1 : faire passer la recette à 3 à 5 étudiants (V1-705) et corriger les blocages du parcours central, importer le `.ics` dans un agenda réel, faire un passage au lecteur d'écran, puis choisir le numéro de version et publier le tag.

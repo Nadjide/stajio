@@ -21,7 +21,7 @@ Le projet est local-first : aucune donnée ni aucun appel IA ne transite par un 
 
 ## Démo
 
-L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama tournant en local, ce qui est la contrainte du choix local-first (pas de dépendance à une clé API cloud, pas de coût d'inférence, données jamais envoyées à un tiers). La section [Installation locale](#installation-locale) permet de la lancer en moins de 5 minutes.
+L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama tournant en local, ce qui est la contrainte du choix local-first (pas de dépendance à une clé API cloud, pas de coût d'inférence, données jamais envoyées à un tiers). La section [Installation](#installation) permet de la lancer sur son poste : compter une dizaine de minutes pour le premier build Docker, plus le téléchargement du modèle (2,5 Go pour `phi4-mini`).
 
 | Tableau de bord                                       | Journal de bord                                     |
 | ----------------------------------------------------- | --------------------------------------------------- |
@@ -31,9 +31,15 @@ L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama 
 | --------------------------------------------- | ----------------------------------------------- |
 | ![Timeline](docs/screenshots/04-timeline.png) | ![Échéances](docs/screenshots/05-deadlines.png) |
 
+| Compétences                                    | Rapport                                    |
+| ---------------------------------------------- | ------------------------------------------ |
+| ![Compétences](docs/screenshots/09-skills.png) | ![Rapport](docs/screenshots/10-report.png) |
+
 | Outils IA                                   | Assistant IA                                       |
 | ------------------------------------------- | -------------------------------------------------- |
 | ![Outils IA](docs/screenshots/06-tools.png) | ![Assistant IA](docs/screenshots/07-assistant.png) |
+
+Captures réalisées avec le [jeu de données fictif](docs/fixtures/demo-backup.json) ; la section du rapport a été générée par phi4-mini puis laissée telle quelle.
 
 <details>
 <summary>Voir aussi : écran de connexion et thème sombre</summary>
@@ -105,13 +111,17 @@ Reporter la valeur générée dans `JWT_SECRET` dans `.env`, puis démarrer :
 docker compose up -d --build
 ```
 
-Au premier démarrage, récupérer un modèle dans le conteneur Ollama :
+Sur la machine de référence (portable Intel Core i7-1165G7, 16 Go de RAM, sans carte graphique dédiée), le premier build a pris 10 min 30 s, téléchargement des images de base compris ; l'image de l'application pèse 1,2 Go. Les builds suivants réutilisent le cache.
+
+Au premier démarrage, récupérer un modèle dans le conteneur Ollama (2,5 Go pour `phi4-mini`) :
 
 ```bash
 docker compose exec ollama ollama pull phi4-mini
 ```
 
 Application disponible sur `http://localhost:3001`. Ollama est accessible en interne par l'application via le réseau Docker (`http://ollama:11434`) et exposé sur l'hôte sur le port `11434` si besoin d'y accéder directement.
+
+Si Ollama est déjà installé sur le poste, le port `11434` est occupé et le démarrage échoue (`port is already allocated`). Définir alors `OLLAMA_HOST_PORT=11435` (ou un autre port libre) dans `.env` : seul le port publié sur l'hôte change, l'application continue d'utiliser l'Ollama du conteneur. Les modèles déjà téléchargés sur l'hôte ne sont pas partagés avec le conteneur.
 
 Les ports de Stajio et d'Ollama sont liés à `127.0.0.1` : ils sont accessibles depuis ce poste. Le fichier `.env` permet aussi de configurer `OLLAMA_MODEL`, `OLLAMA_NUM_CTX` (fenêtre de contexte, 8192 jetons par défaut), `OLLAMA_TIMEOUT_MS` (durée maximale d'une génération, 5 minutes par défaut), `STAJIO_COOKIE_SECURE` et `STAJIO_DB_PATH` (chemin dans le conteneur, par défaut `/app/data/stajio.db`).
 
@@ -168,6 +178,7 @@ Application disponible sur `http://localhost:3001`.
 - Prettier avec plugin Tailwind
 - Vitest : tests de validation, de repositories (isolation par utilisateur) et de routes API
 - Playwright : parcours de bout en bout (configuration interrompue puis reprise, journal sans Ollama, structuration simulée, rapport corrigé, versionné et exporté, sauvegarde et restauration, sécurité du compte)
+- Accessibilité : audit axe-core (WCAG 2.2 AA) de tous les écrans en thème clair, en thème sombre et à 360 px de large, plus des parcours clavier (lien « Aller au contenu », focus visible, menu mobile fermé par Échap)
 - CI GitHub Actions : lint, tests, build et E2E sur chaque push et pull request
 
 Les tests Vitest utilisent une base SQLite en mémoire distincte par suite, même si `STAJIO_DB_PATH` est défini dans le shell. Les tests Playwright lancent un serveur dédié sur `127.0.0.1:3101`, avec une copie des sources et une base temporaire ; ils refusent de réutiliser un serveur existant.
@@ -190,6 +201,7 @@ La [gestion du mot de passe et du compte](docs/ACCOUNT_RECOVERY.md) décrit le c
 
 ## Dépannage
 
+- **`port is already allocated` au démarrage Docker** : un Ollama local occupe déjà le port `11434`. Définir `OLLAMA_HOST_PORT` dans `.env` (voir [Avec Docker](#avec-docker-recommandé)).
 - **« Ollama est injoignable »** : lancer `ollama serve` (ou `docker compose up -d ollama`), puis « Vérifier » dans Mon Profil. Le journal, les échéances et le rapport restent utilisables.
 - **« Le modèle … n'est pas installé »** : `ollama pull phi4-mini` (ou `docker compose exec ollama ollama pull phi4-mini`), ou choisir un modèle installé dans Mon Profil.
 - **« La sélection est trop longue pour le modèle »** : réduire la période ou décocher des notes dans le brief ; à défaut, augmenter `OLLAMA_NUM_CTX` si la machine a assez de mémoire.
