@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "./services/api";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Logo } from "./components/Logo";
@@ -94,6 +94,9 @@ const Dashboard = ({
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const { theme, toggleTheme } = useTheme("light");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
   // Data already on screen stays visible during a refresh; only a first load shows "loading".
@@ -123,13 +126,31 @@ const Dashboard = ({
   };
 
   useEffect(() => {
-    // Chargement initial: les setState arrivent après les await, pas de rendu en cascade
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
+  // The mobile menu behaves like a dialog: focus moves into it, Escape closes it and gives focus back.
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    closeMenuButtonRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setIsSidebarOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isSidebarOpen]);
+
+  const closeMenu = () => {
+    setIsSidebarOpen(false);
+    menuButtonRef.current?.focus();
+  };
+
   const navigate = (tab: TabId) => {
     setActiveTab(tab);
+    // Leaving the mobile menu would otherwise drop focus on a hidden button.
+    if (isSidebarOpen) mainRef.current?.focus();
     setIsSidebarOpen(false);
   };
 
@@ -140,6 +161,12 @@ const Dashboard = ({
 
   return (
     <div className="flex min-h-screen flex-col bg-stone-50 transition-colors duration-200 lg:flex-row dark:bg-stone-950">
+      <a
+        href="#contenu"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:font-medium focus:text-emerald-700 focus:shadow-lg dark:focus:bg-stone-900 dark:focus:text-emerald-400"
+      >
+        Aller au contenu
+      </a>
       {/* Mobile Header */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stone-200 bg-white p-4 transition-colors duration-200 lg:hidden dark:border-stone-800 dark:bg-stone-900">
         <div className="flex items-center gap-2">
@@ -148,6 +175,7 @@ const Dashboard = ({
         </div>
         <button
           type="button"
+          ref={menuButtonRef}
           onClick={() => setIsSidebarOpen(true)}
           aria-label="Ouvrir le menu"
           aria-expanded={isSidebarOpen}
@@ -159,7 +187,7 @@ const Dashboard = ({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-y-auto border-r border-stone-200 bg-white transition-transform duration-300 lg:static lg:h-screen lg:translate-x-0 dark:border-stone-800 dark:bg-stone-900 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} `}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-y-auto border-r border-stone-200 bg-white duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 dark:border-stone-800 dark:bg-stone-900 ${isSidebarOpen ? "translate-x-0 transition-[translate]" : "-translate-x-full transition-[translate,visibility] max-lg:invisible"}`}
       >
         {/* Mobile Sidebar Close Header */}
         <div className="flex items-center justify-between border-b border-stone-100 p-6 lg:hidden dark:border-stone-800">
@@ -169,7 +197,8 @@ const Dashboard = ({
           </div>
           <button
             type="button"
-            onClick={() => setIsSidebarOpen(false)}
+            ref={closeMenuButtonRef}
+            onClick={closeMenu}
             aria-label="Fermer le menu"
             className="rounded-lg p-2 text-stone-500 hover:bg-stone-50 dark:text-stone-400 dark:hover:bg-stone-800"
           >
@@ -188,7 +217,7 @@ const Dashboard = ({
               <div key={item.id}>
                 {item.section && (
                   <div className="pt-4 pb-2">
-                    <p className="px-4 text-xs font-semibold tracking-wider text-stone-400 uppercase dark:text-stone-500">
+                    <p className="px-4 text-xs font-semibold tracking-wider text-stone-500 uppercase dark:text-stone-400">
                       {item.section}
                     </p>
                   </div>
@@ -241,7 +270,7 @@ const Dashboard = ({
             )}
             Déconnexion
           </button>
-          <p className="mt-2 px-4 text-xs text-stone-400 dark:text-stone-500">
+          <p className="mt-2 px-4 text-xs text-stone-500 dark:text-stone-400">
             Tes brouillons sont enregistrés avec ton compte et seront proposés à ta prochaine connexion.
           </p>
         </div>
@@ -249,14 +278,16 @@ const Dashboard = ({
 
       {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
+        <div aria-hidden className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm lg:hidden" onClick={closeMenu} />
       )}
 
       {/* Main Content */}
-      <main className="w-full min-w-0 flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+      <main
+        id="contenu"
+        ref={mainRef}
+        tabIndex={-1}
+        className="w-full min-w-0 flex-1 overflow-y-auto p-4 focus:outline-none md:p-8 lg:p-12"
+      >
         <AnimatePresence mode="wait">
           {activeTab === "dashboard" && (
             <DashboardTab

@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, Circle, Eye, Loader2, PenLine, RefreshCw, 
 import { AiRequestError, generateReportSection, type GenerationMeta } from "../../services/ai";
 import type { Report, ReportProvenance, ReportSection } from "../../types/models";
 import { countToComplete } from "../../utils/ai-budget";
-import { wordCount } from "../../utils/report";
+import { stripRepeatedTitle, wordCount } from "../../utils/report";
 import { MarkdownPreview } from "./MarkdownPreview";
 
 type Proposal = { text: string; meta: GenerationMeta | null; complete: boolean; error?: string };
@@ -79,9 +79,8 @@ function SectionEditor({
             sources: meta.sources,
           }
         : null;
-      const text = proposal.complete
-        ? proposal.text.trim()
-        : `${proposal.text.trim()}\n\n[À compléter : la génération a été interrompue ici]`;
+      const body = stripRepeatedTitle(proposal.text, section.title).trim();
+      const text = proposal.complete ? body : `${body}\n\n[À compléter : la génération a été interrompue ici]`;
       await onApplyGeneration(section, text, provenance, replace);
       setProposal(null);
     } finally {
@@ -126,7 +125,7 @@ function SectionEditor({
           type="button"
           onClick={() => void generate()}
           disabled={generating}
-          className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
         >
           {generating ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -144,7 +143,7 @@ function SectionEditor({
             <Square className="h-3.5 w-3.5" aria-hidden /> Arrêter
           </button>
         )}
-        <span className="ml-auto text-xs text-stone-400 dark:text-stone-500">
+        <span className="ml-auto text-xs text-stone-500 dark:text-stone-400">
           {wordCount(section.content)} mots{markers ? ` · ${markers} passage${markers > 1 ? "s" : ""} à compléter` : ""}
         </span>
       </div>
@@ -168,7 +167,7 @@ function SectionEditor({
         </div>
       )}
       {section.generatedAt && (
-        <p className="text-xs text-stone-400 dark:text-stone-500">
+        <p className="text-xs text-stone-500 dark:text-stone-400">
           Dernière génération : {new Date(section.generatedAt).toLocaleString("fr-FR")} avec{" "}
           {section.model || "modèle inconnu"}. Le texte a pu être corrigé depuis.
         </p>
@@ -184,7 +183,7 @@ function SectionEditor({
             {generating
               ? "Rédaction en cours…"
               : proposal.complete
-                ? "Proposition terminée — relis-la avant de l'utiliser"
+                ? "Proposition terminée : relis-la avant de l'utiliser"
                 : "Proposition incomplète"}
             {proposal.meta?.sources && (
               <span className="font-normal text-stone-500">
@@ -214,7 +213,7 @@ function SectionEditor({
                     type="button"
                     disabled={applying}
                     onClick={() => void apply(true)}
-                    className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                    className="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                   >
                     {section.content.trim() ? "Remplacer la section" : "Utiliser ce texte"}
                   </button>

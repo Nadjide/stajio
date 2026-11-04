@@ -74,7 +74,7 @@ export function TimelineTab({ profile, logs, deadlines, skills }: Props) {
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-stone-900 dark:text-white">Timeline du stage</h2>
         <p className="text-stone-500 dark:text-stone-400">
-          Ton parcours semaine par semaine — parfait pour préparer la soutenance.
+          Ton parcours semaine par semaine, parfait pour préparer la soutenance.
         </p>
       </div>
 
@@ -98,11 +98,11 @@ export function TimelineTab({ profile, logs, deadlines, skills }: Props) {
               }`}
             />
             <div className="mb-3">
-              <span className="text-xs font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+              <span className="text-xs font-bold tracking-wider text-emerald-700 uppercase dark:text-emerald-400">
                 {getInternshipWeekLabel(week.weekNumber, totalWeeks)}
                 {week.weekNumber === currentWeek && " · En cours"}
               </span>
-              <p className="text-sm text-stone-400 dark:text-stone-500">
+              <p className="text-sm text-stone-500 dark:text-stone-400">
                 {isCalendarDate(week.startDate)
                   ? `${week.weekNumber ? "À partir du" : "Avant le"} ${format(parseISO(week.startDate), "dd MMMM yyyy", { locale: fr })}`
                   : "Date de début à vérifier"}
@@ -124,13 +124,13 @@ export function TimelineTab({ profile, logs, deadlines, skills }: Props) {
                     <p
                       className={`truncate text-sm font-semibold ${
                         deadline.completed
-                          ? "text-stone-400 line-through dark:text-stone-500"
+                          ? "text-stone-500 line-through dark:text-stone-400"
                           : "text-stone-900 dark:text-white"
                       }`}
                     >
                       {deadline.title}
                     </p>
-                    <p className="text-xs text-stone-400 dark:text-stone-500">
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
                       {isCalendarDate(deadline.date)
                         ? format(parseISO(deadline.date), "dd MMM", { locale: fr })
                         : "Date à vérifier"}{" "}
@@ -147,7 +147,7 @@ export function TimelineTab({ profile, logs, deadlines, skills }: Props) {
                 >
                   <div className="mb-2 flex items-center gap-2">
                     <BookOpen className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                    <p className="text-xs text-stone-400 dark:text-stone-500">
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
                       {isCalendarDate(log.date)
                         ? format(parseISO(log.date), "dd MMMM yyyy", { locale: fr })
                         : "Date à vérifier"}
@@ -170,7 +170,7 @@ export function TimelineTab({ profile, logs, deadlines, skills }: Props) {
                       {log.technologies?.slice(0, 6).map((tech, i) => (
                         <span
                           key={i}
-                          className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-500 dark:bg-stone-800 dark:text-stone-400"
+                          className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600 dark:bg-stone-800 dark:text-stone-400"
                         >
                           {tech}
                         </span>

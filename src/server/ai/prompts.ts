@@ -3,7 +3,7 @@ import { DEFENSE_CRITERIA } from "../../utils/defense";
 import { formatProfile, formatSources, type ProfileContext } from "./context";
 
 /** Version of the instructions below; stored with each generation. */
-export const PROMPT_VERSION = "v1-2026-10";
+export const PROMPT_VERSION = "v2-2026-10";
 
 const GROUNDING_RULES = `Règles impératives :
 - Utilise uniquement les informations du profil et des notes de journal fournies.
@@ -33,6 +33,7 @@ export function defensePrepPrompt(profile: ProfileContext, sources: SourceSnapsh
   return `Prépare une soutenance de stage ou d'alternance.
 ${GROUNDING_RULES}
 Propose un plan de présentation (5 à 8 parties) et 5 à 8 questions probables du jury, chacune avec un conseil de réponse appuyé sur les notes.
+Formule chaque question comme le jury la poserait, en vouvoyant l'étudiant sans le nommer ni employer de civilité (« Madame », « Monsieur »), et sans date au format AAAA-MM-JJ.
 Réponds uniquement en JSON valide avec ce schéma exact : {"plan":string[],"questions":[{"question":string,"answerHint":string}]}.
 
 ${dataBlock(profile, sources)}`;
@@ -43,7 +44,8 @@ export function evaluateAnswerPrompt(profile: ProfileContext, question: string, 
   return `Tu es membre d'un jury de soutenance, bienveillant mais exigeant. Évalue la réponse de l'étudiant pour l'aider à s'entraîner.
 Critères d'évaluation :
 ${criteria}
-Donne une note indicative de 0 à 10 (nombre), un retour constructif de 2 à 4 phrases qui cite les critères concernés, et une meilleure formulation qui reste fidèle aux faits donnés par l'étudiant ; n'y ajoute aucun chiffre ni résultat inventé, utilise [À compléter : …] si un exemple manque.
+Donne une note indicative de 0 à 10 (nombre), un retour constructif de 2 à 4 phrases qui cite les critères concernés, et une meilleure formulation qui reste fidèle aux faits donnés par l'étudiant.
+Dans cette meilleure formulation, n'ajoute aucun chiffre, gain, effet, conséquence ou détail technique absent de sa réponse : écris [À compléter : résultat obtenu] ou [À compléter : exemple] à la place.
 Réponds uniquement en JSON valide avec ce schéma exact : {"score":number,"feedback":string,"improvedAnswer":string}.
 
 PROFIL
@@ -88,7 +90,7 @@ export function reportSectionPrompt(
   return `Rédige uniquement la section « ${section.title} » d'un rapport de stage ou d'alternance.
 ${GROUNDING_RULES}
 - Intention de la section : ${section.intent.trim() || "[non précisée]"}.
-- Format Markdown. Ne répète pas le titre de la section ; utilise des sous-titres ### si nécessaire, des paragraphes et des listes.
+- Format Markdown. Commence directement par le contenu, sans répéter le titre de la section ; utilise des sous-titres ### si nécessaire, des paragraphes et des listes.
 - Ne rédige pas les autres sections du plan.
 
 BRIEF
@@ -103,7 +105,8 @@ ${dataBlock(profile, sources)}`;
 export function cvPointsPrompt(profile: ProfileContext, sources: SourceSnapshot[]) {
   return `Transforme ces expériences de stage ou d'alternance en 4 à 8 points de CV, en français, optimisés pour les logiciels de recrutement (ATS).
 ${GROUNDING_RULES}
-- Une liste Markdown, un point par ligne, commençant par un verbe d'action.
+- Une liste Markdown, un point par ligne, commençant par un verbe d'action au participe passé (« Développé… », « Optimisé… »).
+- Uniquement des réalisations : pas de point sur le tuteur, l'entreprise d'accueil ou les dates du stage.
 - Ne quantifie que si le chiffre figure dans les notes ; sinon ajoute [À compléter : chiffre ou résultat mesurable] pour inviter l'étudiant à le préciser.
 
 ${dataBlock(profile, sources)}`;

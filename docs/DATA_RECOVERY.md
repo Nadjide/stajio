@@ -27,4 +27,6 @@ docker compose stop app
 docker compose run --rm --no-deps app node scripts/db-recover.mjs --backup /app/data/backups/FICHIER.sqlite --output /app/data/recovery/stajio-recovered.db
 ```
 
+Sous Windows avec Git Bash, préfixer ces commandes par `MSYS_NO_PATHCONV=1` : sans cela, les chemins `/app/...` sont convertis en chemins Windows avant d'atteindre le conteneur.
+
 Configurer ensuite `STAJIO_DB_PATH` pour utiliser `/app/data/recovery/stajio-recovered.db` avant de redémarrer. Les sauvegardes de migration sont des instantanés de toute la base ; l'export JSON depuis le profil sert à transférer les seules données métier du compte connecté.

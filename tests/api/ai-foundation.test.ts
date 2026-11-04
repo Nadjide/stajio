@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { db } from "../../src/server/db";
 import { signAuthToken } from "../../src/server/auth";
 import { AiError, chatJson, CONTEXT_TOKENS, streamChatWithOllama } from "../../src/server/ai/ollama";
-import { evaluationOutput, structureLogOutput } from "../../src/server/ai/schemas";
+import { defensePrepOutput, evaluationOutput, reportPlanOutput, structureLogOutput } from "../../src/server/ai/schemas";
 import { structureLogPrompt } from "../../src/server/ai/prompts";
 import { POST as aiPost } from "../../app/api/ai/route";
 import { POST as aiStreamPost } from "../../app/api/ai/stream/route";
@@ -96,6 +96,18 @@ describe("Ollama client", () => {
     });
   });
 
+  it("splits a list the model returned as one comma-separated string", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({ message: { content: '{"summary":"Résumé","technologies":"PostgreSQL, Node.js","skills":""}' } }),
+    );
+    expect(await chatJson({ userPrompt: "x" }, structureLogOutput)).toEqual({
+      summary: "Résumé",
+      missions: [],
+      technologies: ["PostgreSQL", "Node.js"],
+      skills: [],
+    });
+  });
+
   it.each([
     ["malformed JSON", "pas du json"],
     ["a missing required field", '{"missions":[]}'],
@@ -109,6 +121,46 @@ describe("Ollama client", () => {
     expect(await chatJson({ userPrompt: "x" }, evaluationOutput)).toMatchObject({ score: 7.5, improvedAnswer: "" });
     fetchMock.mockResolvedValue(jsonResponse({ message: { content: '{"score":14,"feedback":"Bien"}' } }));
     await expect(chatJson({ userPrompt: "x" }, evaluationOutput)).rejects.toMatchObject({ code: "invalid_output" });
+  });
+
+  it.each([
+    [
+      "a list wrapped in an extra array",
+      '{"sections":[[{"title":"Introduction","intent":"Contexte"},{"title":"Missions"}]]}',
+    ],
+    ["[title, intent] pairs", '{"sections":[["Introduction","Contexte"],["Missions","Réalisations"]]}'],
+    ["bare titles", '{"sections":["Introduction","Missions"]}'],
+  ])("accepts a report plan given as %s", async (_label, content) => {
+    fetchMock.mockResolvedValue(jsonResponse({ message: { content } }));
+    const plan = await chatJson({ userPrompt: "x" }, reportPlanOutput);
+    expect(plan.sections.map((section) => section.title)).toEqual(["Introduction", "Missions"]);
+    expect(plan.sections.every((section) => typeof section.intent === "string")).toBe(true);
+  });
+
+  it("still rejects a report plan with a single section", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ message: { content: '{"sections":[[{"title":"Introduction"}]]}' } }));
+    await expect(chatJson({ userPrompt: "x" }, reportPlanOutput)).rejects.toMatchObject({ code: "invalid_output" });
+  });
+
+  it("accepts defense questions given as bare strings", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({ message: { content: '{"plan":["Intro"],"questions":["Pourquoi ce choix ?","Et ensuite ?"]}' } }),
+    );
+    const prep = await chatJson({ userPrompt: "x" }, defensePrepOutput);
+    expect(prep.questions).toEqual([
+      { question: "Pourquoi ce choix ?", answerHint: "" },
+      { question: "Et ensuite ?", answerHint: "" },
+    ]);
+  });
+
+  it("drops defense questions that contain no words", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({
+        message: { content: '{"plan":["Intro"],"questions":[{"question":"Pourquoi ce choix ?"},{"question":":"}]}' },
+      }),
+    );
+    const prep = await chatJson({ userPrompt: "x" }, defensePrepOutput);
+    expect(prep.questions).toEqual([{ question: "Pourquoi ce choix ?", answerHint: "" }]);
   });
 
   it("explains how to install a missing model", async () => {

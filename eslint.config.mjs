@@ -28,6 +28,9 @@ export default [
       "no-undef": "off",
       "no-unused-vars": "off",
       "react/no-unescaped-entities": "off",
+      // Screens load their data in a mount effect whose loader sets a loading flag before its first await.
+      // This React Compiler rule flags that pattern; the app does not use the compiler.
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   {

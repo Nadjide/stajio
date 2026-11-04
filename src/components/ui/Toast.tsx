@@ -23,9 +23,9 @@ export function useToast() {
 }
 
 const ICONS: Record<ToastType, React.ReactNode> = {
-  success: <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />,
-  error: <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />,
-  info: <Info className="w-5 h-5 text-blue-500 shrink-0" />,
+  success: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" />,
+  error: <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />,
+  info: <Info className="h-5 w-5 shrink-0 text-blue-500" />,
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -50,7 +50,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+      <div className="pointer-events-none fixed right-4 bottom-4 z-[100] flex w-full max-w-sm flex-col gap-2">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
@@ -58,16 +58,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="pointer-events-auto flex items-start gap-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl shadow-lg p-4"
+              className="pointer-events-auto flex items-start gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-lg dark:border-stone-700 dark:bg-stone-900"
             >
               {ICONS[t.type]}
-              <p className="text-sm text-stone-700 dark:text-stone-200 flex-1 leading-snug">{t.message}</p>
+              <p className="flex-1 text-sm leading-snug text-stone-700 dark:text-stone-200">{t.message}</p>
               <button
                 onClick={() => dismiss(t.id)}
-                className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 shrink-0"
+                className="shrink-0 text-stone-500 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300"
                 aria-label="Fermer"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </motion.div>
           ))}

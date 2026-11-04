@@ -4,12 +4,16 @@ const modelName = z.string().trim().max(100).optional();
 const logIds = z.array(z.string().min(1).max(200)).max(2000).optional();
 const idSchema = z.string().min(1).max(200);
 
-/** Models often omit empty arrays or pad labels; keep only non-empty, deduplicated strings. */
+/**
+ * Models often omit empty arrays, pad labels or answer with one comma-separated string;
+ * keep only non-empty, deduplicated strings.
+ */
 const labelList = (maxItems: number) =>
   z
-    .array(z.unknown())
-    .optional()
-    .default([])
+    .preprocess(
+      (value) => (typeof value === "string" ? value.split(/[,;\n]/) : value),
+      z.array(z.unknown()).optional().default([]),
+    )
     .transform((items) => [
       ...new Set(
         items
@@ -33,10 +37,22 @@ export const structureLogOutput = z.object({
 
 export const defensePrepOutput = z.object({
   plan: z.array(text(500)).min(1).max(20),
+  // A model sometimes answers with bare strings or ends the list with a stray item such as ":";
+  // keep only real questions.
   questions: z
-    .array(z.object({ question: text(1000), answerHint: z.string().trim().max(2000).default("") }))
-    .min(1)
-    .max(15),
+    .array(
+      z.preprocess(
+        (item) => (typeof item === "string" ? { question: item } : item),
+        z.object({ question: text(1000), answerHint: z.string().trim().max(2000).default("") }),
+      ),
+    )
+    .transform((questions) => questions.filter((item) => /\p{L}/u.test(item.question)))
+    .pipe(
+      z
+        .array(z.object({ question: z.string(), answerHint: z.string() }))
+        .min(1)
+        .max(15),
+    ),
 });
 
 export const evaluationOutput = z.object({
@@ -54,11 +70,28 @@ export const evaluationOutput = z.object({
   improvedAnswer: z.string().trim().max(6000).default(""),
 });
 
+/**
+ * Small local models (phi4-mini) sometimes wrap the list in an extra array or answer with
+ * [title, intent] pairs or bare titles: normalize these shapes before validating.
+ */
+const unwrapNestedList = (value: unknown) =>
+  Array.isArray(value) &&
+  value.length > 0 &&
+  value.every((item) => Array.isArray(item) && item.every((inner) => typeof inner === "object" && inner !== null))
+    ? value.flat()
+    : value;
+
+const planSection = z.preprocess(
+  (item) => {
+    if (typeof item === "string") return { title: item, intent: "" };
+    if (Array.isArray(item)) return { title: item[0], intent: typeof item[1] === "string" ? item[1] : "" };
+    return item;
+  },
+  z.object({ title: text(200), intent: z.string().trim().max(1000).default("") }),
+);
+
 export const reportPlanOutput = z.object({
-  sections: z
-    .array(z.object({ title: text(200), intent: z.string().trim().max(1000).default("") }))
-    .min(2)
-    .max(15),
+  sections: z.preprocess(unwrapNestedList, z.array(planSection).min(2).max(15)),
 });
 
 // --- Inputs -------------------------------------------------------------

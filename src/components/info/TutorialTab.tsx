@@ -49,10 +49,10 @@ export function TutorialTab() {
             </p>
           </div>
           <div className="flex justify-center">
-            <ChevronDown className="h-6 w-6 text-stone-400" />
+            <ChevronDown className="h-6 w-6 text-stone-500 dark:text-stone-400" />
           </div>
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 dark:border-emerald-900/30 dark:bg-emerald-900/10">
-            <p className="mb-2 text-sm font-medium text-emerald-600 dark:text-emerald-500">
+            <p className="mb-2 text-sm font-medium text-emerald-700 dark:text-emerald-500">
               Ce que l'IA propose (à relire) :
             </p>
             <div className="space-y-4">
@@ -65,10 +65,10 @@ export function TutorialTab() {
               <div>
                 <h4 className="font-semibold text-stone-900 dark:text-white">Compétences acquises</h4>
                 <div className="mt-1 flex gap-2">
-                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs dark:border-stone-700 dark:bg-stone-800">
+                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200">
                     Résolution de bugs
                   </span>
-                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs dark:border-stone-700 dark:bg-stone-800">
+                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200">
                     Intégration API tierce
                   </span>
                 </div>
@@ -76,10 +76,10 @@ export function TutorialTab() {
               <div>
                 <h4 className="font-semibold text-stone-900 dark:text-white">Technologies</h4>
                 <div className="mt-1 flex gap-2">
-                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs dark:border-stone-700 dark:bg-stone-800">
+                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200">
                     Node.js
                   </span>
-                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs dark:border-stone-700 dark:bg-stone-800">
+                  <span className="rounded-md border border-stone-200 bg-white px-2 py-1 text-xs text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200">
                     Stripe
                   </span>
                 </div>

@@ -20,7 +20,7 @@ const inputClass =
   "w-full rounded-xl border border-stone-200 bg-transparent p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:border-stone-700 dark:text-white";
 
 const noteLabel = (log: LogEntry) =>
-  `${isCalendarDate(log.date) ? format(parseISO(log.date), "dd MMM yyyy", { locale: fr }) : log.date} — ${log.rawContent.slice(0, 80)}${log.rawContent.length > 80 ? "…" : ""}`;
+  `${isCalendarDate(log.date) ? format(parseISO(log.date), "dd MMM yyyy", { locale: fr }) : log.date} : ${log.rawContent.slice(0, 80)}${log.rawContent.length > 80 ? "…" : ""}`;
 
 function LevelSelect({
   id,
@@ -171,7 +171,7 @@ function SkillCard({
               type="button"
               onClick={() => void saveEdit()}
               disabled={busy || !label.trim()}
-              className="flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+              className="flex items-center gap-1 rounded-xl bg-emerald-700 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Check className="h-4 w-4" aria-hidden /> Enregistrer
             </button>
@@ -190,7 +190,7 @@ function SkillCard({
               type="button"
               onClick={() => setEditing(true)}
               aria-label={`Renommer ou modifier ${skill.label}`}
-              className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-emerald-600 dark:hover:bg-stone-800"
+              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-emerald-600 dark:text-stone-400 dark:hover:bg-stone-800"
             >
               <Pencil className="h-4 w-4" aria-hidden />
             </button>
@@ -198,7 +198,7 @@ function SkillCard({
               type="button"
               onClick={() => void remove()}
               aria-label={`Supprimer ${skill.label}`}
-              className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-red-600 dark:hover:bg-stone-800"
+              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:text-stone-400 dark:hover:bg-stone-800"
             >
               <Trash2 className="h-4 w-4" aria-hidden />
             </button>
@@ -243,7 +243,7 @@ function SkillCard({
                   void run(() => api.skills.update(skill.id, { logIds: skill.logIds.filter((id) => id !== log.id) }))
                 }
                 aria-label="Retirer cette preuve"
-                className="shrink-0 rounded p-1 text-stone-400 hover:text-red-600"
+                className="shrink-0 rounded p-1 text-stone-500 hover:text-red-600 dark:text-stone-400"
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
@@ -406,7 +406,7 @@ export function SkillsTab({ logs, skills, onChanged }: Props) {
         <button
           type="submit"
           disabled={saving || !label.trim()}
-          className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
+          className="flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
         >
           {saving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Plus className="h-4 w-4" aria-hidden />}{" "}
           Ajouter
@@ -435,7 +435,7 @@ export function SkillsTab({ logs, skills, onChanged }: Props) {
                 className="flex items-center gap-1 rounded-xl border border-emerald-200 bg-white px-3 py-1.5 text-sm text-emerald-800 hover:border-emerald-400 disabled:opacity-50 dark:border-emerald-800 dark:bg-stone-900 dark:text-emerald-300"
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden /> {suggestion.label}
-                <span className="text-xs text-stone-400">({suggestion.logIds.length})</span>
+                <span className="text-xs text-stone-500 dark:text-stone-400">({suggestion.logIds.length})</span>
               </button>
             ))}
           </div>

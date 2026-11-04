@@ -66,7 +66,7 @@ function DefenseView({ output }: { output: AiOutput }) {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center gap-4">
-        <p className="flex-1 text-xs text-stone-400 dark:text-stone-500">
+        <p className="flex-1 text-xs text-stone-500 dark:text-stone-400">
           {output.model ? `Modèle ${output.model} · ` : ""}
           {output.sources?.length ? `${output.sources.length} notes sources · ` : ""}
           {format(parseISO(output.createdAt), "dd MMM yyyy, HH:mm", { locale: fr })}
@@ -87,7 +87,7 @@ function DefenseView({ output }: { output: AiOutput }) {
               `Stajio_soutenance_${format(new Date(), "yyyy-MM-dd")}.pdf`,
             )
           }
-          className="flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400"
+          className="flex items-center gap-2 text-sm font-medium text-emerald-700 dark:text-emerald-400"
         >
           <Download className="h-4 w-4" aria-hidden /> Exporter PDF
         </button>
@@ -97,7 +97,7 @@ function DefenseView({ output }: { output: AiOutput }) {
         <ol className="space-y-2">
           {prep.plan.map((item, i) => (
             <li key={i} className="flex items-center gap-3 text-stone-700 dark:text-stone-300">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-bold text-stone-500 dark:bg-stone-800 dark:text-stone-400">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-bold text-stone-600 dark:bg-stone-800 dark:text-stone-400">
                 {i + 1}
               </span>
               {item}
@@ -154,7 +154,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       const response = await prepareDefense(undefined, current.signal);
       const { output } = await api.aiOutputs.save({
         type: "defense",
-        title: `Préparation de soutenance — ${format(new Date(), "dd MMMM yyyy à HH:mm", { locale: fr })}`,
+        title: `Préparation de soutenance du ${format(new Date(), "dd MMMM yyyy à HH:mm", { locale: fr })}`,
         content: JSON.stringify(response.result),
         model: response.model,
         instructions: response.instructions ?? null,
@@ -195,7 +195,6 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
       title: "Rapport de stage",
       desc: "Brief, plan modifiable, rédaction par section, versions et export PDF.",
-      action: () => onNavigate("report"),
     },
     {
       key: "defense",
@@ -207,7 +206,6 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       iconBg: "bg-blue-100 dark:bg-blue-900/30",
       title: "Prépa soutenance",
       desc: "Plan de présentation et questions probables du jury.",
-      action: () => void runDefense(),
     },
     {
       key: "cv",
@@ -215,9 +213,14 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       iconBg: "bg-purple-100 dark:bg-purple-900/30",
       title: "Expérience → CV",
       desc: "Choisis tes expériences, génère des points CV puis corrige-les.",
-      action: () => setView({ kind: "cv", output: null }),
     },
   ];
+
+  const openCard = (key: string) => {
+    if (key === "report") onNavigate("report");
+    else if (key === "defense") void runDefense();
+    else setView({ kind: "cv", output: null });
+  };
 
   return (
     <motion.div
@@ -246,7 +249,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
               <button
                 key={card.key}
                 type="button"
-                onClick={card.action}
+                onClick={() => openCard(card.key)}
                 disabled={defenseLoading}
                 className="group rounded-3xl border border-stone-200 bg-white p-8 text-left shadow-sm transition-all hover:border-emerald-500 disabled:opacity-60 dark:border-stone-800 dark:bg-stone-900"
               >
@@ -303,7 +306,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
               <History className="h-4 w-4" aria-hidden /> Résultats enregistrés ({history.length})
             </h3>
             {history.length === 0 && (
-              <p className="p-6 text-sm text-stone-400 dark:text-stone-500">
+              <p className="p-6 text-sm text-stone-500 dark:text-stone-400">
                 Aucun résultat enregistré pour l'instant.
               </p>
             )}
@@ -314,7 +317,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
                     <p className="truncate text-sm font-semibold text-stone-800 hover:text-emerald-600 dark:text-stone-200">
                       {output.title}
                     </p>
-                    <p className="text-xs text-stone-400 dark:text-stone-500">
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
                       {TYPE_LABELS[output.type] ?? output.type} ·{" "}
                       {format(parseISO(output.createdAt), "dd MMM yyyy, HH:mm", { locale: fr })}
                       {output.updatedAt ? " · corrigé" : ""}

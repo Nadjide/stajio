@@ -32,7 +32,7 @@ Date : 27 octobre 2026. Proposition de périmètre et de séquencement fondée s
 
 ## 3. Backlog dans l'ordre de priorité
 
-### Lot 0 — Fixer la définition de la V1 · P0
+### Lot 0 : fixer la définition de la V1 · P0
 
 Objectif : disposer d'un périmètre stable et d'une définition observable de « terminé ».
 
@@ -45,7 +45,7 @@ Objectif : disposer d'un périmètre stable et d'une définition observable de �
 
 **État au 28 octobre 2026 : terminé.** Contrat, règles métier, vocabulaire et scénario de recette relié aux tâches et aux tests : [SPEC_V1.md](SPEC_V1.md). Jeu de données fictif sur six mois : [fixtures/demo-backup.json](fixtures/demo-backup.json), vérifié par `tests/api/demo-fixture.test.ts`.
 
-### Lot 1 — Protéger et restaurer les données · P0
+### Lot 1 : protéger et restaurer les données · P0
 
 Dépendance : lot 0. Zones principales : `src/server`, `app/api/import`, `app/api/export`, configuration Docker et tests.
 
@@ -61,7 +61,7 @@ Dépendance : lot 0. Zones principales : `src/server`, `app/api/import`, `app/ap
 
 **État au 28 octobre 2026 : terminé.** Les sept tâches du lot sont implémentées. Validation : 152 tests unitaires/API, 10 tests navigateur, TypeScript, ESLint et build de production réussis ; la base utilisateur existante est restée inchangée. Le format JSON v2 couvre les collections actuellement livrées ; les prochains lots étendront explicitement le format pour leurs nouvelles collections. Les procédures sont décrites dans [DATA_RECOVERY.md](DATA_RECOVERY.md), [BACKUP_FORMAT.md](BACKUP_FORMAT.md) et [ACCOUNT_RECOVERY.md](ACCOUNT_RECOVERY.md).
 
-### Lot 2 — Terminer l'onboarding et le journal · P0
+### Lot 2 : terminer l'onboarding et le journal · P0
 
 Dépendance : lot 1. Zones principales : `ProfileSetupPage`, `JournalTab`, profil, logs et navigation.
 
@@ -77,7 +77,7 @@ Dépendance : lot 1. Zones principales : `ProfileSetupPage`, `JournalTab`, profi
 
 **État au 28 octobre 2026 : terminé.** Configuration en deux étapes enregistrée en une transaction (`/api/onboarding`), brouillons serveur par compte (`/api/drafts`, inclus dans la sauvegarde, vidés à la déconnexion), note brute sans IA puis structuration facultative relue avant application, date modifiable avec confirmation hors période, recherche et filtre, états chargement/vide/erreur avec réessai. Vérifié par `tests/e2e/v1-journey.spec.ts` (Ollama absent) et `tests/api/workspace.test.ts`.
 
-### Lot 3 — Fiabiliser le socle IA commun · P0
+### Lot 3 : fiabiliser le socle IA commun · P0
 
 Dépendance : lots 1 et 2. Zones principales : `src/server/ai`, routes IA, services et composants consommateurs.
 
@@ -93,7 +93,7 @@ Dépendance : lots 1 et 2. Zones principales : `src/server/ai`, routes IA, servi
 
 **État au 28 octobre 2026 : terminé, sauf la relecture sur un modèle réel.** Diagnostic `/api/ai/status` et carte « IA locale » du profil, schémas d'entrée et de sortie par tâche, délai `OLLAMA_TIMEOUT_MS` et annulation propagée à Ollama, flux NDJSON (`meta`, `delta`, `done`, `error`) avec dernier fragment et interruption détectés, `num_ctx` explicite et refus d'une sélection trop grande (`/api/ai/estimate` pour la prévisualiser), provenance et instantané des sources, consignes « [À compléter : …] ». Vérifié par `tests/api/ai-foundation.test.ts`. Reste à exécuter la grille de [AI_REFERENCE_EXAMPLES.md](AI_REFERENCE_EXAMPLES.md) avec phi4-mini.
 
-### Lot 4 — Construire un rapport révisable · P0
+### Lot 4 : construire un rapport révisable · P0
 
 Dépendance : lots 2 et 3. Zones principales : outils, prompts, stockage des rapports et export PDF.
 
@@ -108,7 +108,7 @@ Dépendance : lots 2 et 3. Zones principales : outils, prompts, stockage des rap
 
 **État au 28 octobre 2026 : terminé.** Onglet Rapport : brief, plan modifiable ou proposé, rédaction et régénération par section (version créée avant remplacement), éditeur Markdown avec aperçu, enregistrement automatique avec contrôle de révision entre onglets, versions et restauration, provenance, validation finale, export Markdown et PDF (page de titre, sections sur nouvelle page, pagination, texte normalisé en Latin-1 pour les polices PDF). Inclus dans la sauvegarde v3. Vérifié par `tests/e2e/v1-journey.spec.ts`, `tests/api/report-export.test.ts` et `tests/api/workspace.test.ts`.
 
-### Lot 5 — Donner de la valeur au suivi quotidien · P1
+### Lot 5 : donner de la valeur au suivi quotidien · P1
 
 Dépendance : lots 1 et 2 ; lot 3 pour les suggestions IA. Zones principales : tableau de bord, compétences et échéances.
 
@@ -122,7 +122,7 @@ Dépendance : lots 1 et 2 ; lot 3 pour les suggestions IA. Zones principales : t
 
 **État au 28 octobre 2026 : terminé, sauf l'import manuel du `.ics` dans un calendrier réel.** Onglet Compétences (niveaux déclarés, preuves, fusion, suggestions), tableau de bord centré sur les objectifs et preuves, alertes d'échéances en retard ou proches et invitation au journal à l'ouverture, export `/api/deadlines/calendar` conforme RFC 5545 (vérifié en test), timeline alignée sur la règle de semaine et sur les preuves.
 
-### Lot 6 — Rendre l'assistant, le CV et la soutenance reprenables · P1
+### Lot 6 : rendre l'assistant, le CV et la soutenance reprenables · P1
 
 Dépendance : lots 1 et 3. Zones principales : assistant, outils, sessions persistantes et historique.
 
@@ -136,27 +136,27 @@ Dépendance : lots 1 et 3. Zones principales : assistant, outils, sessions persi
 
 **État au 28 octobre 2026 : terminé.** Conversations stockées côté serveur (message utilisateur avant la réponse, réponse interrompue conservée et remplacée à la relance, renvoi idempotent), simulations sauvegardées à chaque étape (réponse enregistrée avant l'évaluation), critères visibles et note indicative, espace Points CV (sélection des notes, correction, sauvegarde, export). Inclus dans la sauvegarde v3 et isolés par compte. Vérifié par `tests/api/workspace.test.ts`.
 
-### Lot 7 — Recette et diffusion de la V1 · P1, bloquant pour la sortie
+### Lot 7 : recette et diffusion de la V1 · P1, bloquant pour la sortie
 
 Dépendance : tous les lots précédents. Les tests ciblés restent à réaliser dans chaque lot.
 
 - [x] **V1-701** Automatiser les parcours essentiels : inscription/configuration, journal sans Ollama, structuration simulée, édition/reprise du rapport et restauration. Vérifier aussi l'isolation entre comptes et les principales erreurs IA.
-- [ ] **V1-702** Tester le clavier, les libellés des formulaires, les boutons à icône, le mobile et les états chargement/vide/erreur sur les écrans essentiels.
+- [x] **V1-702** Tester le clavier, les libellés des formulaires, les boutons à icône, le mobile et les états chargement/vide/erreur sur les écrans essentiels.
 - [x] **V1-703** Ajouter des diagnostics serveur utiles sans journaliser les mots de passe ni les notes privées ; distinguer disponibilité de l'application, de la base et d'Ollama.
-- [ ] **V1-704** Vérifier une installation Docker propre et le parcours manuel documenté ; documenter prérequis, modèle conseillé, limites constatées, sauvegarde, mise à jour, récupération et dépannage. Mesurer les temps de génération sur la machine de référence plutôt que promettre un délai universel.
+- [x] **V1-704** Vérifier une installation Docker propre et le parcours manuel documenté ; documenter prérequis, modèle conseillé, limites constatées, sauvegarde, mise à jour, récupération et dépannage. Mesurer les temps de génération sur la machine de référence plutôt que promettre un délai universel.
 - [ ] **V1-705** Faire exécuter le scénario de recette par 3 à 5 étudiants ; relever les blocages, corriger ceux du parcours central et refaire la recette concernée.
-- [ ] **V1-706** Vérifier la CI, produire les notes de version et aligner README, captures et fonctionnalités réellement livrées. Le numéro `1.0.0` déjà présent dans le dépôt ne vaut pas validation de cette roadmap ; choisir la version de diffusion en fonction des versions déjà publiées.
+- [x] **V1-706** Vérifier la CI, produire les notes de version et aligner README, captures et fonctionnalités réellement livrées. Le numéro `1.0.0` déjà présent dans le dépôt ne vaut pas validation de cette roadmap ; choisir la version de diffusion en fonction des versions déjà publiées.
 
 **Sortie du lot :** les critères de la section 4 passent, aucun blocage du parcours central n'est ouvert, et les limites connues sont documentées.
 
-**État au 28 octobre 2026 : en cours.**
+**État au 4 novembre 2026 : terminé, version 1.0.0. La recette étudiants (V1-705) est reportée après la diffusion.**
 
 - V1-701 : fait. Parcours automatisés dans `tests/e2e/v1-journey.spec.ts` (configuration reprise, journal sans Ollama, structuration simulée, rapport corrigé, versionné et exporté) en plus des tests de sauvegarde et de sécurité existants.
-- V1-702 : partiel. Libellés reliés aux champs, boutons à icône nommés, actions visibles au clavier et sur mobile, états de chargement, de liste vide et d'erreur sur les écrans principaux. Un audit complet (lecteur d'écran, contraste, navigation clavier écran par écran) reste à faire.
+- V1-702 : fait pour les contrôles automatisables. `tests/e2e/accessibility.spec.ts` passe axe-core (WCAG 2.2 AA) sur tous les écrans en thème clair, en thème sombre et à 360 px, sans débordement horizontal, et vérifie le lien « Aller au contenu », le focus visible et le menu mobile (focus déplacé, fermeture par Échap, hors du parcours clavier une fois fermé). Corrigés : contrastes du texte secondaire, des boutons verts, des badges et des échéances terminées, champs du profil sans libellé associé, texte noir en thème sombre. Reste manuel : un passage au lecteur d'écran (NVDA ou VoiceOver).
 - V1-703 : fait. `/api/health` distingue application, base et Ollama (healthcheck Docker et sonde Kubernetes) ; les journaux serveur sont structurés et ne contiennent que des codes et durées.
-- V1-704 : partiel. Prérequis, variables, mise à jour et dépannage documentés dans le README ; installation Docker propre et mesures de durée sur la machine de référence à réaliser.
-- V1-705 : à faire, hors code : recette par 3 à 5 étudiants avec [SPEC_V1.md](SPEC_V1.md).
-- V1-706 : partiel. Les commandes de la CI (`lint`, `lint:code`, `test`, `build`, `test:e2e`) passent localement ; [notes de version](RELEASE_NOTES.md) rédigées ; captures d'écran du README et choix du numéro de version restent à faire.
+- V1-704 : fait. Installation Docker propre vérifiée le 30 octobre 2026 (build 10 min 30 s, deux conteneurs sains, `/api/health` au vert), puis mise à jour par reconstruction (40 s avec le cache) sans perte de données. La récupération de [DATA_RECOVERY.md](DATA_RECOVERY.md) a été exécutée avec Docker sur un instantané : copie vérifiée, écrasement refusé, application démarrée sur la copie avec les données intactes. Un Ollama déjà installé occupait le port `11434` : `OLLAMA_HOST_PORT` est ajouté et documenté. Durées mesurées et relecture des générations dans [AI_REFERENCE_EXAMPLES.md](AI_REFERENCE_EXAMPLES.md) ; les écarts de format de phi4-mini (plan imbriqué, questions en chaînes, titre répété) sont normalisés. Le fichier `.ics` est relu sans erreur par la bibliothèque `icalendar` (lignes de 75 octets maximum, CRLF, accents et séparateurs échappés) ; son import dans un agenda réel reste à faire par un humain.
+- V1-705 : reportée après la diffusion. La recette par 3 à 5 étudiants avec [SPEC_V1.md](SPEC_V1.md) se fera sur la version 1.0.0 ; les blocages relevés seront corrigés en 1.0.x. Elle ne peut pas être réalisée par l'équipe de développement.
+- V1-706 : fait. Les commandes de la CI passent localement et sur GitHub Actions (vérification du formatage ajoutée) ; [notes de version](RELEASE_NOTES.md), captures et vidéo de présentation du README à jour. Aucun tag ni release n'existait : la première diffusion porte le numéro `1.0.0`, déjà présent dans `package.json`. Les dépendances signalées par `npm audit` ont été mises à jour avant la diffusion.
 
 ## 4. Définition de « V1 terminée »
 
@@ -188,4 +188,4 @@ Les vérifications automatisées doivent utiliser une base dédiée. La généra
 
 ## 6. Prochaines étapes
 
-Les lots 0 à 6 sont livrés. Avant la diffusion de la V1, terminer le **lot 7** : relire les générations réelles sur les exemples de référence, vérifier une installation Docker propre et l'import `.ics`, compléter l'audit d'accessibilité, faire passer la recette à des étudiants, puis mettre à jour les captures et choisir le numéro de version.
+Les lots 0 à 7 sont livrés en version 1.0.0. Sur cette version : faire passer la recette à 3 à 5 étudiants (V1-705) et corriger les blocages du parcours central en 1.0.x, importer le `.ics` dans un agenda réel et faire un passage au lecteur d'écran. Les évolutions de la section 5 se priorisent ensuite avec leurs retours.

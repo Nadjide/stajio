@@ -155,7 +155,7 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
               <button
                 type="button"
                 onClick={() => onNavigate("journal")}
-                className="rounded-lg bg-emerald-600 px-3 py-1.5 font-medium text-white"
+                className="rounded-lg bg-emerald-700 px-3 py-1.5 font-medium text-white"
               >
                 Écrire une note
               </button>
@@ -198,7 +198,7 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
             className="h-full rounded-full bg-emerald-500"
           />
         </div>
-        <p className="mt-3 text-xs text-stone-400 dark:text-stone-500">
+        <p className="mt-3 text-xs text-stone-500 dark:text-stone-400">
           {isCalendarDate(profile.internshipStart) && isCalendarDate(profile.internshipEnd)
             ? `Du ${format(parseISO(profile.internshipStart), "dd MMMM yyyy", { locale: fr })} au ${format(parseISO(profile.internshipEnd), "dd MMMM yyyy", { locale: fr })}`
             : "Vérifie les dates dans ton profil."}
@@ -232,7 +232,7 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
           <Award className="mb-3 h-5 w-5 text-purple-600 dark:text-purple-400" aria-hidden />
           <p className="text-3xl font-bold text-stone-900 dark:text-white">
             {stats.provenSkills}
-            <span className="text-lg text-stone-400">/{skills.length}</span>
+            <span className="text-lg text-stone-500 dark:text-stone-400">/{skills.length}</span>
           </p>
           <p className="text-sm text-stone-500 dark:text-stone-400">Compétences avec preuve</p>
         </button>
@@ -260,7 +260,7 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
               <button
                 type="button"
                 onClick={() => onNavigate("deadlines")}
-                className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                className="text-sm font-medium text-emerald-700 hover:underline dark:text-emerald-400"
               >
                 Tout voir
               </button>
@@ -275,21 +275,21 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
                     {urgency.label}
                   </span>
                   <p className="flex-1 truncate text-sm text-stone-700 dark:text-stone-300">{deadline.title}</p>
-                  <span className="shrink-0 text-xs text-stone-400 dark:text-stone-500">
+                  <span className="shrink-0 text-xs text-stone-500 dark:text-stone-400">
                     {TYPE_LABELS[deadline.type]}
                   </span>
                 </div>
               );
             })}
             {stats.upcoming.length === 0 && (
-              <p className="text-sm text-stone-400 dark:text-stone-500">Aucune échéance en attente.</p>
+              <p className="text-sm text-stone-500 dark:text-stone-400">Aucune échéance en attente.</p>
             )}
           </div>
         </div>
 
         <div className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm dark:border-stone-800 dark:bg-stone-900">
           <h3 className="mb-1 font-bold text-stone-900 dark:text-white">Technologies citées</h3>
-          <p className="mb-6 text-xs text-stone-400 dark:text-stone-500">Nombre de notes qui les mentionnent.</p>
+          <p className="mb-6 text-xs text-stone-500 dark:text-stone-400">Nombre de notes qui les mentionnent.</p>
           <ul className="space-y-2">
             {stats.technologies.slice(0, 8).map((item) => (
               <li
@@ -297,11 +297,11 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
                 className="flex items-center justify-between text-sm text-stone-600 dark:text-stone-300"
               >
                 <span className="truncate">{item.name}</span>
-                <span className="shrink-0 text-xs font-semibold text-stone-400">{item.count}</span>
+                <span className="shrink-0 text-xs font-semibold text-stone-500 dark:text-stone-400">{item.count}</span>
               </li>
             ))}
             {stats.technologies.length === 0 && (
-              <li className="text-sm text-stone-400 dark:text-stone-500">
+              <li className="text-sm text-stone-500 dark:text-stone-400">
                 Structure tes notes pour faire apparaître les outils utilisés.
               </li>
             )}
@@ -325,13 +325,13 @@ export function DashboardTab({ profile, logs, deadlines, skills, status, onRetry
           <button
             type="button"
             onClick={() => onNavigate("skills")}
-            className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            className="text-sm font-medium text-emerald-700 hover:underline dark:text-emerald-400"
           >
             Gérer
           </button>
         </div>
         {skills.length === 0 ? (
-          <p className="text-sm text-stone-400 dark:text-stone-500">
+          <p className="text-sm text-stone-500 dark:text-stone-400">
             Aucune compétence pour l'instant. Ajoute celles que tu veux démontrer et relie-les à tes notes.
           </p>
         ) : (

@@ -97,7 +97,7 @@ function ReportWorkspace({
           onChange={(event) => update((current) => ({ ...current, title: event.target.value || "Rapport" }))}
         />
         <span
-          className={`text-xs ${status === "error" || status === "conflict" ? "font-semibold text-red-600" : "text-stone-400 dark:text-stone-500"}`}
+          className={`text-xs ${status === "error" || status === "conflict" ? "font-semibold text-red-600" : "text-stone-500 dark:text-stone-400"}`}
           aria-live="polite"
         >
           {SAVE_STATUS_LABELS[status]}
@@ -106,7 +106,7 @@ function ReportWorkspace({
           type="button"
           onClick={() => void remove()}
           aria-label="Supprimer ce rapport"
-          className="rounded-lg p-2 text-stone-400 hover:bg-stone-100 hover:text-red-600 dark:hover:bg-stone-800"
+          className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:text-stone-400 dark:hover:bg-stone-800"
         >
           <Trash2 className="h-4 w-4" aria-hidden />
         </button>
@@ -148,7 +148,7 @@ function ReportWorkspace({
             role="tab"
             aria-selected={step === item.id}
             onClick={() => setStep(item.id)}
-            className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${step === item.id ? "bg-emerald-600 text-white" : "bg-white text-stone-600 hover:bg-stone-100 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800"}`}
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${step === item.id ? "bg-emerald-700 text-white" : "bg-white text-stone-600 hover:bg-stone-100 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800"}`}
           >
             {item.label}
           </button>
@@ -221,7 +221,6 @@ function ReportLoader({
   }, [id]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
 
@@ -369,7 +368,7 @@ export function ReportTab({ profile, logs }: { profile: UserProfile; logs: LogEn
             type="button"
             onClick={() => void create()}
             disabled={creating}
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 font-medium text-white disabled:opacity-50"
           >
             {creating ? (
               <Loader2 className="h-5 w-5 animate-spin" aria-hidden />

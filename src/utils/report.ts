@@ -35,6 +35,19 @@ export function assembleReportMarkdown(report: Pick<Report, "title" | "sections"
   return `${body}\n`;
 }
 
+const comparableTitle = (value: string) =>
+  value
+    .trim()
+    .toLocaleLowerCase("fr")
+    .replace(/[\s.:!?]+$/u, "");
+
+/** Generated sections sometimes start by repeating their own title, which the export already adds. */
+export function stripRepeatedTitle(text: string, title: string): string {
+  const match = text.trimStart().match(/^#{1,6}[ \t]+([^\n]*)(?:\n|$)/);
+  if (!match || comparableTitle(match[1]) !== comparableTitle(title)) return text;
+  return text.trimStart().slice(match[0].length).trimStart();
+}
+
 export function reportToComplete(report: Pick<Report, "sections">): number {
   return report.sections.reduce((total, section) => total + countToComplete(section.content), 0);
 }

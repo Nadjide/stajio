@@ -125,7 +125,7 @@ function EditNoteForm({
         </p>
       )}
       <div className="flex flex-wrap items-center justify-end gap-3">
-        <span className="mr-auto text-xs text-stone-400 dark:text-stone-500" aria-live="polite">
+        <span className="mr-auto text-xs text-stone-500 dark:text-stone-400" aria-live="polite">
           {DRAFT_STATUS_LABELS[draft.status]}
         </span>
         <button
@@ -139,7 +139,7 @@ function EditNoteForm({
           type="button"
           onClick={save}
           disabled={saving || !rawContent.trim() || !isCalendarDate(date) || needsConfirmation}
-          className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+          className="flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 font-medium text-white hover:bg-emerald-800 disabled:opacity-50 dark:bg-emerald-700 dark:hover:bg-emerald-800"
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
           Enregistrer
@@ -214,7 +214,7 @@ function StructurePanel({
   return (
     <div className="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5 dark:border-emerald-800 dark:bg-emerald-900/10">
       <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-        <Sparkles className="h-4 w-4" aria-hidden /> Proposition de l'IA — vérifie et corrige avant d'appliquer
+        <Sparkles className="h-4 w-4" aria-hidden /> Proposition de l'IA : vérifie et corrige avant d'appliquer
       </p>
       {loading && (
         <div
@@ -268,7 +268,7 @@ function StructurePanel({
             type="button"
             onClick={() => void apply()}
             disabled={applying}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
           >
             {applying && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
             Appliquer la proposition
@@ -314,11 +314,11 @@ function SkillLinker({
       <span className="flex items-center gap-1 text-xs font-semibold text-stone-500 dark:text-stone-400">
         <Link2 className="h-3.5 w-3.5" aria-hidden /> Preuve de :
       </span>
-      {linked.length === 0 && <span className="text-xs text-stone-400 dark:text-stone-500">aucune compétence</span>}
+      {linked.length === 0 && <span className="text-xs text-stone-500 dark:text-stone-400">aucune compétence</span>}
       {linked.map((skill) => (
         <span
           key={skill.id}
-          className="flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white"
+          className="flex items-center gap-1 rounded-lg bg-emerald-700 px-2.5 py-1 text-xs font-medium text-white"
         >
           {skill.label}
           <button
@@ -389,7 +389,7 @@ export function NoteCard({ log, profile, skills, autoStructure, onChanged, onSki
   };
 
   const iconButton =
-    "rounded-lg p-1.5 text-stone-400 transition-colors hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-stone-500 dark:hover:bg-stone-800";
+    "rounded-lg p-1.5 text-stone-500 transition-colors hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-stone-400 dark:hover:bg-stone-800";
 
   return (
     <article
@@ -398,7 +398,7 @@ export function NoteCard({ log, profile, skills, autoStructure, onChanged, onSki
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <span className="text-xs font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+          <span className="text-xs font-bold tracking-wider text-emerald-700 uppercase dark:text-emerald-400">
             {getInternshipWeekLabel(week, totalWeeks)}
           </span>
           <h3 id={`note-title-${log.id}`} className="mt-1 text-xl font-bold text-stone-900 dark:text-white">

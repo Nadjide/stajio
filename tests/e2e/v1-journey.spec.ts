@@ -26,6 +26,9 @@ async function configuredStudent(page: Page) {
   return request;
 }
 
+// The first autosave waits for its debounce and, on the development server, for the drafts route to compile.
+const DRAFT_SAVE_TIMEOUT = 15_000;
+
 const nav = (page: Page, name: string) =>
   page.getByRole("navigation", { name: "Navigation principale" }).getByRole("button", { name, exact: true }).click();
 
@@ -38,7 +41,7 @@ test.describe("Parcours V1", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Configure ton profil" })).toBeVisible();
     await page.getByLabel("École", { exact: true }).fill(profile.school);
-    await expect(page.getByText("Brouillon enregistré")).toBeVisible();
+    await expect(page.getByText("Brouillon enregistré")).toBeVisible({ timeout: DRAFT_SAVE_TIMEOUT });
     await page.reload();
     await expect(page.getByText("Ta configuration interrompue a été reprise")).toBeVisible();
     await expect(page.getByLabel("École", { exact: true })).toHaveValue(profile.school);
@@ -80,7 +83,7 @@ test.describe("Parcours V1", () => {
     await page.getByRole("button", { name: "Nouvelle note" }).click();
     await page.getByLabel("Date de l'activité").fill("2026-10-05");
     await page.getByLabel("Ce que tu as fait").fill("J'ai écrit les tests de l'API de facturation.");
-    await expect(page.getByText("Brouillon enregistré")).toBeVisible();
+    await expect(page.getByText("Brouillon enregistré")).toBeVisible({ timeout: DRAFT_SAVE_TIMEOUT });
 
     await page.reload();
     await nav(page, "Journal de bord");

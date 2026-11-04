@@ -108,7 +108,7 @@ export function ReviewStep({
         subtitle: profile.company,
         lines: [
           profile.displayName,
-          [profile.degree, profile.school].filter(Boolean).join(" — "),
+          [profile.degree, profile.school].filter(Boolean).join(", "),
           profile.tutorName ? `Tuteur : ${profile.tutorName}` : "",
           period,
           report.status === "validated" && report.validatedAt
@@ -209,7 +209,7 @@ export function ReviewStep({
           <button
             type="button"
             onClick={() => void exportPdf()}
-            className="flex items-center gap-2 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white dark:bg-emerald-600"
+            className="flex items-center gap-2 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white dark:bg-emerald-700"
           >
             <FileDown className="h-4 w-4" aria-hidden /> Exporter en PDF
           </button>
@@ -254,16 +254,19 @@ export function ReviewStep({
           </button>
         </div>
         {versions === null ? (
-          <p className="text-sm text-stone-400">Chargement des versions…</p>
+          <p className="text-sm text-stone-500 dark:text-stone-400">Chargement des versions…</p>
         ) : versions.length === 0 ? (
-          <p className="text-sm text-stone-400 dark:text-stone-500">Aucune version enregistrée.</p>
+          <p className="text-sm text-stone-500 dark:text-stone-400">Aucune version enregistrée.</p>
         ) : (
           <ul className="divide-y divide-stone-100 rounded-2xl border border-stone-200 dark:divide-stone-800 dark:border-stone-800">
             {versions.map((version) => (
               <li key={version.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
                 <span className="flex-1 text-stone-700 dark:text-stone-300">
                   <strong>{version.label}</strong>
-                  <span className="text-stone-400"> · {new Date(version.createdAt).toLocaleString("fr-FR")}</span>
+                  <span className="text-stone-500 dark:text-stone-400">
+                    {" "}
+                    · {new Date(version.createdAt).toLocaleString("fr-FR")}
+                  </span>
                 </span>
                 <button
                   type="button"

@@ -200,7 +200,7 @@ export function BriefStep({
                       {isCalendarDate(log.date) ? format(parseISO(log.date), "dd MMM yyyy", { locale: fr }) : log.date}
                     </span>{" "}
                     <span className="text-stone-500 dark:text-stone-400">
-                      — {(log.summary || log.rawContent).slice(0, 140)}
+                      : {(log.summary || log.rawContent).slice(0, 140)}
                     </span>
                   </span>
                 </label>

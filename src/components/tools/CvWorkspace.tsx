@@ -165,13 +165,13 @@ export function CvWorkspace({
                   <span>
                     <span className="font-medium text-stone-800 dark:text-stone-200">{day(log.date)}</span>{" "}
                     <span className="text-stone-500 dark:text-stone-400">
-                      — {(log.summary || log.rawContent).slice(0, 140)}
+                      : {(log.summary || log.rawContent).slice(0, 140)}
                     </span>
                   </span>
                 </label>
               </li>
             ))}
-            {visible.length === 0 && <li className="p-2 text-sm text-stone-400">Aucune note.</li>}
+            {visible.length === 0 && <li className="p-2 text-sm text-stone-500 dark:text-stone-400">Aucune note.</li>}
           </ul>
           {estimate && selected.length > 0 && !estimate.fits && (
             <p className="text-sm font-medium text-red-700 dark:text-red-400">
@@ -272,7 +272,7 @@ export function CvWorkspace({
               type="button"
               onClick={() => void save()}
               disabled={saving || generating || !text.trim()}
-              className="flex items-center gap-2 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-emerald-600"
+              className="flex items-center gap-2 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-emerald-700"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
