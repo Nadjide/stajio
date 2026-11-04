@@ -4,6 +4,8 @@
   <p><strong>Assistant intelligent de suivi d'alternance et de stage, en local-first.</strong></p>
 
   <p>
+    <a href="https://github.com/Nadjide/stajio/actions/workflows/ci.yml"><img src="https://github.com/Nadjide/stajio/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/Licence-MIT-2f855a?style=flat-square" alt="Licence MIT" /></a>
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square" alt="Next.js" /></a>
     <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-blue.svg?style=flat-square&logo=react" alt="React" /></a>
     <a href="https://ollama.com/"><img src="https://img.shields.io/badge/Ollama-Local_Model-2f855a?style=flat-square" alt="Ollama" /></a>
@@ -20,6 +22,12 @@ Stajio aide un étudiant en stage ou en alternance à transformer ses notes d'ac
 Le projet est local-first : aucune donnée ni aucun appel IA ne transite par un service cloud tiers. Toute la stack (base de données, inférence du modèle) tourne sur la machine de l'utilisateur.
 
 ## Démo
+
+<p align="center">
+  <a href="docs/demo/stajio-demo.mp4"><img src="docs/demo/stajio-demo.gif" alt="Aperçu animé de Stajio : une note du journal structurée par l'IA puis corrigée, et une section du rapport rédigée à partir des notes" width="960" /></a>
+</p>
+
+**[Vidéo de présentation (2 min 40)](docs/demo/stajio-demo.mp4)** : connexion, journal de bord structuré par l'IA puis corrigé, compétences et preuves, échéances, rapport rédigé et exporté en PDF, points CV, thème sombre et sauvegarde. Les réponses de l'IA sont des sorties réelles de phi4-mini, rejouées en accéléré ; [la page de la vidéo](docs/demo/README.md) détaille ce qui est rejoué et comment la régénérer.
 
 L'application n'a pas de démo hébergée publiquement : elle repose sur Ollama tournant en local, ce qui est la contrainte du choix local-first (pas de dépendance à une clé API cloud, pas de coût d'inférence, données jamais envoyées à un tiers). La section [Installation](#installation) permet de la lancer sur son poste : compter une dizaine de minutes pour le premier build Docker, plus le téléchargement du modèle (2,5 Go pour `phi4-mini`).
 
@@ -165,7 +173,7 @@ Application disponible sur `http://localhost:3001`.
 - `npm run start` : démarrage production (nécessite un build)
 - `npm run lint` : vérification des types TypeScript
 - `npm run lint:code` : lint ESLint
-- `npm run format` : formatage Prettier
+- `npm run format` : formatage Prettier (`npm run format:check` pour vérifier sans modifier)
 - `npm run test` : tests unitaires et API (Vitest)
 - `npm run test:e2e` : tests end-to-end (Playwright ; nécessite `npx playwright install chromium` une première fois)
 - `npm run check` : pipeline complète (lint + tests + build)
@@ -179,7 +187,7 @@ Application disponible sur `http://localhost:3001`.
 - Vitest : tests de validation, de repositories (isolation par utilisateur) et de routes API
 - Playwright : parcours de bout en bout (configuration interrompue puis reprise, journal sans Ollama, structuration simulée, rapport corrigé, versionné et exporté, sauvegarde et restauration, sécurité du compte)
 - Accessibilité : audit axe-core (WCAG 2.2 AA) de tous les écrans en thème clair, en thème sombre et à 360 px de large, plus des parcours clavier (lien « Aller au contenu », focus visible, menu mobile fermé par Échap)
-- CI GitHub Actions : lint, tests, build et E2E sur chaque push et pull request
+- CI GitHub Actions : types, lint, formatage, tests, build et E2E sur chaque push et pull request
 
 Les tests Vitest utilisent une base SQLite en mémoire distincte par suite, même si `STAJIO_DB_PATH` est défini dans le shell. Les tests Playwright lancent un serveur dédié sur `127.0.0.1:3101`, avec une copie des sources et une base temporaire ; ils refusent de réutiliser un serveur existant.
 
@@ -224,4 +232,4 @@ La [spécification V1](docs/SPEC_V1.md) décrit la promesse, les règles métier
 
 ## Licence
 
-MIT — voir [LICENSE](LICENSE).
+MIT, voir [LICENSE](LICENSE).

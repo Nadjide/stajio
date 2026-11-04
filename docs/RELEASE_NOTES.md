@@ -1,8 +1,8 @@
 # Notes de version
 
-## Version candidate V1 (non publiée)
+## Version 1.0.0 (4 novembre 2026)
 
-Le numéro de diffusion reste à choisir (voir V1-706) : `1.0.0` dans `package.json` ne vaut pas validation de la roadmap.
+Première version diffusée. Elle couvre les lots 0 à 7 de la [roadmap V1](ROADMAP_V1.md) ; la recette par des étudiants (V1-705) se fera sur cette version et ses retours alimenteront les versions 1.0.x.
 
 ### Nouveautés
 
@@ -16,6 +16,7 @@ Le numéro de diffusion reste à choisir (voir V1-706) : `1.0.0` dans `package.j
 - **Diagnostic IA** dans le profil et route publique `/api/health`.
 - **Accessibilité** : lien « Aller au contenu », focus clavier visible partout, menu mobile qui reçoit le focus et se ferme avec Échap, contrastes relevés au niveau WCAG AA dans les deux thèmes, champs du profil reliés à leur libellé. Un audit axe-core automatisé couvre tous les écrans (clair, sombre, 360 px).
 - **Docker** : `OLLAMA_HOST_PORT` permet de publier Ollama sur un autre port quand un Ollama local occupe déjà `11434`.
+- **Vidéo de présentation** : [docs/demo](demo/README.md) contient une vidéo du parcours complet, son aperçu animé pour le README et les scripts qui les régénèrent à partir du jeu de données fictif.
 
 ### Changements de comportement
 
@@ -35,6 +36,13 @@ Le numéro de diffusion reste à choisir (voir V1-706) : `1.0.0` dans `package.j
 - Une section générée qui recommence par son propre titre ne le duplique plus dans le rapport.
 - Consignes IA `v2-2026-10` : points CV au participe passé et limités aux réalisations, questions de jury vouvoyées sans civilité ni date ISO, reformulation de soutenance invitée à ne pas ajouter de résultat.
 - Les échéances terminées étaient affichées en transparence, rendant leur texte et leurs étiquettes illisibles (contraste 2,3:1).
+- Sur ordinateur, la barre de navigation défilait avec les pages longues ; elle reste désormais affichée.
+
+### Maintenance
+
+- Dépendances mises à jour pour corriger les vulnérabilités signalées par `npm audit`, dont une critique dans Next.js (passage à Next.js 16.4, zod 4.6 et Vitest 5, `postcss-selector-parser` forcé en 6.1.5). `npm audit --omit=dev` ne signale plus rien ; seule reste une alerte modérée sur `minimatch`, utilisé par les outils ESLint et absent de l'application.
+- Fichiers et dépendances hérités du premier modèle Vite supprimés (`src/main.tsx`, `src/index.css`, `metadata.json`, `dotenv`, `github-markdown-css`, `autoprefixer`).
+- La CI vérifie aussi le formatage Prettier.
 
 ### Mise à jour
 

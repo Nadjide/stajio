@@ -11,7 +11,7 @@ Pour chaque cas : importer [le jeu de données fictif](fixtures/demo-backup.json
 - [ ] Le texte est en français, sobre, sans formule promotionnelle.
 - [ ] La réponse respecte le format attendu (JSON valide ou Markdown sans titre de section répété).
 
-## Cas 1 — Structurer une note
+## Cas 1 : structurer une note
 
 Note : « Tests d'intégration de l'API d'historique. Découverte d'une requête lente ; ajout d'un index après analyse du plan d'exécution. »
 
@@ -19,7 +19,7 @@ Attendu : un résumé fidèle ; des missions du type « Écrire les tests d'int�
 
 À refuser : un gain de performance chiffré (« requête 10 fois plus rapide »), un outil non cité.
 
-## Cas 2 — Rédiger la section « Missions réalisées »
+## Cas 2 : rédiger la section « Missions réalisées »
 
 Brief : consignes « 20 à 25 pages, plan libre », problématique « Comment fiabiliser l'historique des réservations ? », toutes les notes.
 
@@ -27,19 +27,19 @@ Attendu : des sous-parties `###` reprenant l'API d'historique, l'export CSV, la 
 
 À refuser : un nombre d'utilisateurs, un pourcentage de couverture de tests ou un retour de la tutrice qui ne figure pas dans les notes.
 
-## Cas 3 — Points CV
+## Cas 3 : points CV
 
 Sources : notes 05, 06, 08 et 11 du jeu fictif.
 
 Attendu : 4 à 8 puces commençant par un verbe d'action (« Développé… », « Optimisé… », « Déployé… »), chaque chiffre remplacé par `[À compléter : chiffre ou résultat mesurable]`.
 
-## Cas 4 — Évaluer une réponse de soutenance
+## Cas 4 : évaluer une réponse de soutenance
 
 Question : « Quelle difficulté as-tu rencontrée et comment l'as-tu surmontée ? » Réponse : « La requête d'historique était lente, j'ai ajouté un index. »
 
 Attendu : une note entre 4 et 7 (réponse pertinente mais brève), un retour qui cite les critères « Exemples concrets » ou « Recul », une formulation améliorée qui n'invente pas le gain obtenu.
 
-## Cas 5 — Sélection trop grande
+## Cas 5 : sélection trop grande
 
 Avec `OLLAMA_NUM_CTX=2048`, demander un rapport sur toutes les notes : Stajio doit refuser avant l'appel, indiquer la taille estimée et proposer de réduire la période ou de générer par section.
 
