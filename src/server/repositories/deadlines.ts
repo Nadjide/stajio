@@ -47,7 +47,9 @@ export const deadlinesRepository = {
       | undefined;
     if (!existing) return false;
 
-    const stmt = db.prepare("UPDATE deadlines SET title = ?, date = ?, type = ?, completed = ? WHERE id = ? AND uid = ?");
+    const stmt = db.prepare(
+      "UPDATE deadlines SET title = ?, date = ?, type = ?, completed = ? WHERE id = ? AND uid = ?",
+    );
     stmt.run(
       payload.title ?? existing.title,
       payload.date ?? existing.date,

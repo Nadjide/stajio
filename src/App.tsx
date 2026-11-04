@@ -126,8 +126,6 @@ const Dashboard = ({
   };
 
   useEffect(() => {
-    // Chargement initial: les setState arrivent après les await, pas de rendu en cascade
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
@@ -189,7 +187,7 @@ const Dashboard = ({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-y-auto border-r border-stone-200 bg-white duration-300 lg:static lg:h-screen lg:translate-x-0 dark:border-stone-800 dark:bg-stone-900 ${isSidebarOpen ? "translate-x-0 transition-[translate]" : "-translate-x-full transition-[translate,visibility] max-lg:invisible"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-y-auto border-r border-stone-200 bg-white duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 dark:border-stone-800 dark:bg-stone-900 ${isSidebarOpen ? "translate-x-0 transition-[translate]" : "-translate-x-full transition-[translate,visibility] max-lg:invisible"}`}
       >
         {/* Mobile Sidebar Close Header */}
         <div className="flex items-center justify-between border-b border-stone-100 p-6 lg:hidden dark:border-stone-800">

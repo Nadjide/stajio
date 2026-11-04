@@ -183,7 +183,7 @@ function SectionEditor({
             {generating
               ? "Rédaction en cours…"
               : proposal.complete
-                ? "Proposition terminée — relis-la avant de l'utiliser"
+                ? "Proposition terminée : relis-la avant de l'utiliser"
                 : "Proposition incomplète"}
             {proposal.meta?.sources && (
               <span className="font-normal text-stone-500">

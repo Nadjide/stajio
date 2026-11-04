@@ -108,7 +108,7 @@ export function ReviewStep({
         subtitle: profile.company,
         lines: [
           profile.displayName,
-          [profile.degree, profile.school].filter(Boolean).join(" — "),
+          [profile.degree, profile.school].filter(Boolean).join(", "),
           profile.tutorName ? `Tuteur : ${profile.tutorName}` : "",
           period,
           report.status === "validated" && report.validatedAt
@@ -263,7 +263,10 @@ export function ReviewStep({
               <li key={version.id} className="flex flex-wrap items-center gap-3 p-3 text-sm">
                 <span className="flex-1 text-stone-700 dark:text-stone-300">
                   <strong>{version.label}</strong>
-                  <span className="text-stone-500 dark:text-stone-400"> · {new Date(version.createdAt).toLocaleString("fr-FR")}</span>
+                  <span className="text-stone-500 dark:text-stone-400">
+                    {" "}
+                    · {new Date(version.createdAt).toLocaleString("fr-FR")}
+                  </span>
                 </span>
                 <button
                   type="button"

@@ -116,7 +116,10 @@ export function JournalTab({ profile, logs, skills, status, onRefresh, onSkillsC
           <label htmlFor="journal-search" className="sr-only">
             Rechercher un mot dans les notes
           </label>
-          <Search className="pointer-events-none absolute top-3.5 left-3 h-4 w-4 text-stone-500 dark:text-stone-400" aria-hidden />
+          <Search
+            className="pointer-events-none absolute top-3.5 left-3 h-4 w-4 text-stone-500 dark:text-stone-400"
+            aria-hidden
+          />
           <input
             id="journal-search"
             type="search"

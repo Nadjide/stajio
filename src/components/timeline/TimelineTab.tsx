@@ -74,7 +74,7 @@ export function TimelineTab({ profile, logs, deadlines, skills }: Props) {
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-stone-900 dark:text-white">Timeline du stage</h2>
         <p className="text-stone-500 dark:text-stone-400">
-          Ton parcours semaine par semaine — parfait pour préparer la soutenance.
+          Ton parcours semaine par semaine, parfait pour préparer la soutenance.
         </p>
       </div>
 

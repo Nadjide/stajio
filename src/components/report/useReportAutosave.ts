@@ -130,6 +130,6 @@ export const SAVE_STATUS_LABELS: Record<SaveStatus, string> = {
   saved: "Enregistré",
   pending: "Modifications en attente…",
   saving: "Enregistrement…",
-  error: "Échec de l'enregistrement — nouvel essai automatique",
+  error: "Échec de l'enregistrement, nouvel essai automatique",
   conflict: "Conflit : modifié dans un autre onglet",
 };

@@ -214,7 +214,7 @@ function StructurePanel({
   return (
     <div className="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5 dark:border-emerald-800 dark:bg-emerald-900/10">
       <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-        <Sparkles className="h-4 w-4" aria-hidden /> Proposition de l'IA — vérifie et corrige avant d'appliquer
+        <Sparkles className="h-4 w-4" aria-hidden /> Proposition de l'IA : vérifie et corrige avant d'appliquer
       </p>
       {loading && (
         <div

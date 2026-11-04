@@ -165,7 +165,7 @@ export function CvWorkspace({
                   <span>
                     <span className="font-medium text-stone-800 dark:text-stone-200">{day(log.date)}</span>{" "}
                     <span className="text-stone-500 dark:text-stone-400">
-                      — {(log.summary || log.rawContent).slice(0, 140)}
+                      : {(log.summary || log.rawContent).slice(0, 140)}
                     </span>
                   </span>
                 </label>

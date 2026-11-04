@@ -106,7 +106,7 @@ function ReportWorkspace({
           type="button"
           onClick={() => void remove()}
           aria-label="Supprimer ce rapport"
-          className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:hover:bg-stone-800 dark:text-stone-400"
+          className="rounded-lg p-2 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:text-stone-400 dark:hover:bg-stone-800"
         >
           <Trash2 className="h-4 w-4" aria-hidden />
         </button>
@@ -221,7 +221,6 @@ function ReportLoader({
   }, [id]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
 

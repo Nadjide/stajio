@@ -60,7 +60,7 @@ function Bubble({
         )}
         {status === "interrupted" && (
           <p className="mt-2 flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400">
-            <AlertTriangle className="h-3.5 w-3.5" aria-hidden /> Réponse interrompue — texte incomplet
+            <AlertTriangle className="h-3.5 w-3.5" aria-hidden /> Réponse interrompue : texte incomplet
           </p>
         )}
       </div>

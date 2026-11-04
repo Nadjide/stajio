@@ -20,7 +20,7 @@ const inputClass =
   "w-full rounded-xl border border-stone-200 bg-transparent p-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:border-stone-700 dark:text-white";
 
 const noteLabel = (log: LogEntry) =>
-  `${isCalendarDate(log.date) ? format(parseISO(log.date), "dd MMM yyyy", { locale: fr }) : log.date} — ${log.rawContent.slice(0, 80)}${log.rawContent.length > 80 ? "…" : ""}`;
+  `${isCalendarDate(log.date) ? format(parseISO(log.date), "dd MMM yyyy", { locale: fr }) : log.date} : ${log.rawContent.slice(0, 80)}${log.rawContent.length > 80 ? "…" : ""}`;
 
 function LevelSelect({
   id,
@@ -190,7 +190,7 @@ function SkillCard({
               type="button"
               onClick={() => setEditing(true)}
               aria-label={`Renommer ou modifier ${skill.label}`}
-              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-emerald-600 dark:hover:bg-stone-800 dark:text-stone-400"
+              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-emerald-600 dark:text-stone-400 dark:hover:bg-stone-800"
             >
               <Pencil className="h-4 w-4" aria-hidden />
             </button>
@@ -198,7 +198,7 @@ function SkillCard({
               type="button"
               onClick={() => void remove()}
               aria-label={`Supprimer ${skill.label}`}
-              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:hover:bg-stone-800 dark:text-stone-400"
+              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:text-stone-400 dark:hover:bg-stone-800"
             >
               <Trash2 className="h-4 w-4" aria-hidden />
             </button>

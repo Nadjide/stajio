@@ -27,6 +27,9 @@ jobs:
       - name: ESLint
         run: npm run lint:code
 
+      - name: Prettier
+        run: npm run format:check
+
       - name: Unit & API tests
         run: npm run test
 

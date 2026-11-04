@@ -225,7 +225,9 @@ function SessionView({ simulation, onChange }: { simulation: Simulation; onChang
             <p className="mb-4 text-sm text-stone-700 dark:text-stone-300">{step.evaluation.feedback}</p>
             {step.evaluation.improvedAnswer && (
               <>
-                <p className="mb-2 text-xs font-bold text-stone-500 uppercase dark:text-stone-400">Formulation suggérée</p>
+                <p className="mb-2 text-xs font-bold text-stone-500 uppercase dark:text-stone-400">
+                  Formulation suggérée
+                </p>
                 <p className="text-sm text-stone-600 italic dark:text-stone-400">{step.evaluation.improvedAnswer}</p>
               </>
             )}

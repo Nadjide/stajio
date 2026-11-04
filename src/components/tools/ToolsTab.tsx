@@ -154,7 +154,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       const response = await prepareDefense(undefined, current.signal);
       const { output } = await api.aiOutputs.save({
         type: "defense",
-        title: `Préparation de soutenance — ${format(new Date(), "dd MMMM yyyy à HH:mm", { locale: fr })}`,
+        title: `Préparation de soutenance du ${format(new Date(), "dd MMMM yyyy à HH:mm", { locale: fr })}`,
         content: JSON.stringify(response.result),
         model: response.model,
         instructions: response.instructions ?? null,
@@ -195,7 +195,6 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
       title: "Rapport de stage",
       desc: "Brief, plan modifiable, rédaction par section, versions et export PDF.",
-      action: () => onNavigate("report"),
     },
     {
       key: "defense",
@@ -207,7 +206,6 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       iconBg: "bg-blue-100 dark:bg-blue-900/30",
       title: "Prépa soutenance",
       desc: "Plan de présentation et questions probables du jury.",
-      action: () => void runDefense(),
     },
     {
       key: "cv",
@@ -215,9 +213,14 @@ export function ToolsTab({ logs, onNavigate }: Props) {
       iconBg: "bg-purple-100 dark:bg-purple-900/30",
       title: "Expérience → CV",
       desc: "Choisis tes expériences, génère des points CV puis corrige-les.",
-      action: () => setView({ kind: "cv", output: null }),
     },
   ];
+
+  const openCard = (key: string) => {
+    if (key === "report") onNavigate("report");
+    else if (key === "defense") void runDefense();
+    else setView({ kind: "cv", output: null });
+  };
 
   return (
     <motion.div
@@ -246,7 +249,7 @@ export function ToolsTab({ logs, onNavigate }: Props) {
               <button
                 key={card.key}
                 type="button"
-                onClick={card.action}
+                onClick={() => openCard(card.key)}
                 disabled={defenseLoading}
                 className="group rounded-3xl border border-stone-200 bg-white p-8 text-left shadow-sm transition-all hover:border-emerald-500 disabled:opacity-60 dark:border-stone-800 dark:bg-stone-900"
               >

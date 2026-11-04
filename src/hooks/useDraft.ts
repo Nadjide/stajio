@@ -124,5 +124,5 @@ export const DRAFT_STATUS_LABELS: Record<DraftStatus, string> = {
   pending: "Modifications non enregistrées…",
   saving: "Enregistrement du brouillon…",
   saved: "Brouillon enregistré",
-  error: "Brouillon non enregistré — nouvel essai automatique",
+  error: "Brouillon non enregistré, nouvel essai automatique",
 };

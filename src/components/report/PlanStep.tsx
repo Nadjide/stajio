@@ -89,7 +89,9 @@ export function PlanStep({
         {sections.map((section, index) => (
           <li key={section.id} className="rounded-2xl border border-stone-200 p-4 dark:border-stone-800">
             <div className="flex items-start gap-3">
-              <span className="mt-3 w-6 shrink-0 text-center text-sm font-bold text-stone-500 dark:text-stone-400">{index + 1}</span>
+              <span className="mt-3 w-6 shrink-0 text-center text-sm font-bold text-stone-500 dark:text-stone-400">
+                {index + 1}
+              </span>
               <div className="flex-1 space-y-2">
                 <label htmlFor={`plan-title-${section.id}`} className="sr-only">
                   Titre de la section {index + 1}
@@ -120,7 +122,7 @@ export function PlanStep({
                   disabled={index === 0}
                   onClick={() => move(index, -1)}
                   aria-label={`Monter « ${section.title} »`}
-                  className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 disabled:opacity-30 dark:hover:bg-stone-800 dark:text-stone-400"
+                  className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 disabled:opacity-30 dark:text-stone-400 dark:hover:bg-stone-800"
                 >
                   <ArrowUp className="h-4 w-4" aria-hidden />
                 </button>
@@ -129,7 +131,7 @@ export function PlanStep({
                   disabled={index === sections.length - 1}
                   onClick={() => move(index, 1)}
                   aria-label={`Descendre « ${section.title} »`}
-                  className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 disabled:opacity-30 dark:hover:bg-stone-800 dark:text-stone-400"
+                  className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 disabled:opacity-30 dark:text-stone-400 dark:hover:bg-stone-800"
                 >
                   <ArrowDown className="h-4 w-4" aria-hidden />
                 </button>
@@ -137,7 +139,7 @@ export function PlanStep({
                   type="button"
                   onClick={() => remove(section)}
                   aria-label={`Supprimer « ${section.title} »`}
-                  className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:hover:bg-stone-800 dark:text-stone-400"
+                  className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-red-600 dark:text-stone-400 dark:hover:bg-stone-800"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />
                 </button>
@@ -199,7 +201,7 @@ export function PlanStep({
             {proposal.map((item) => (
               <li key={item.title}>
                 <strong>{item.title}</strong>
-                {item.intent && ` — ${item.intent}`}
+                {item.intent && ` : ${item.intent}`}
               </li>
             ))}
           </ol>
